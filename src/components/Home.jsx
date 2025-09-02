@@ -68,9 +68,9 @@ export default function Home({ goTo }) {
       </div>
 
       <div className="home-grid">
-        <div className="panel">
+        <div className="panel compact">
           <h3 className="panel-title">Jump back in</h3>
-          <div className="row wrap">
+          <div className="quick-actions">
             <button className="btn" onClick={() => goTo('focus')}>Focus</button>
             <button className="btn" onClick={() => goTo('tasks')}>Tasks</button>
             <button className="btn" onClick={() => goTo('notes')}>Notes</button>
