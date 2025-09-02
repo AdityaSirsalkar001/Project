@@ -55,6 +55,7 @@ export default function App() {
             {tab === 'tasks' && <TodoList />}
             {tab === 'notes' && <Notes />}
             {tab === 'planner' && <DayPlanner />}
+            {tab === 'analytics' && <Analytics />}
             {tab === 'settings' && <Settings />}
             {tab === 'profile' && <Profile />}
           </div>
