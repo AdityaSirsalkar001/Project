@@ -45,15 +45,19 @@ export default function FocusTimer() {
   });
   const [mode, setMode] = usePersistentState('timer:mode', 'focus');
   const [round, setRound] = usePersistentState('timer:round', 1);
-  const [remaining, setRemaining] = usePersistentState('timer:remaining', settings.focusMin * 60);
+  const [remaining, setRemaining] = usePersistentState('timer:remaining', 25 * 60);
   const [running, setRunning] = usePersistentState('timer:running', false);
 
+  // derive total based on mode
+  const total = useMemo(() => (
+    mode === 'focus' ? settings.focusMin * 60 : mode === 'short' ? settings.shortBreakMin * 60 : settings.longBreakMin * 60
+  ), [mode, settings.focusMin, settings.shortBreakMin, settings.longBreakMin]);
+
+  // ensure remaining aligns when mode or settings change
   useEffect(() => {
-    if (mode === 'focus') setRemaining(settings.focusMin * 60);
-    if (mode === 'short') setRemaining(settings.shortBreakMin * 60);
-    if (mode === 'long') setRemaining(settings.longBreakMin * 60);
+    setRemaining(total);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [settings.focusMin, settings.shortBreakMin, settings.longBreakMin, mode]);
+  }, [total, mode]);
 
   useInterval(() => {
     if (!running) return;
@@ -83,31 +87,66 @@ export default function FocusTimer() {
 
   function start() { setRunning(true); }
   function pause() { setRunning(false); }
-  function reset() {
+  function reset() { setRunning(false); setRemaining(total); }
+
+  function switchMode(next) {
     setRunning(false);
-    if (mode === 'focus') setRemaining(settings.focusMin * 60);
-    if (mode === 'short') setRemaining(settings.shortBreakMin * 60);
-    if (mode === 'long') setRemaining(settings.longBreakMin * 60);
+    setMode(next);
+    if (next === 'focus') setRound(1);
+    setRemaining(
+      next === 'focus' ? settings.focusMin * 60 : next === 'short' ? settings.shortBreakMin * 60 : settings.longBreakMin * 60
+    );
   }
 
   const title = useMemo(() => mode === 'focus' ? 'Focus' : mode === 'short' ? 'Short Break' : 'Long Break', [mode]);
 
+  const radius = 80;
+  const circumference = 2 * Math.PI * radius;
+  const progress = Math.max(0, Math.min(1, remaining / total));
+  const dash = circumference;
+  const offset = dash * (1 - progress);
+
   return (
     <div className="panel">
-      <h3 className="panel-title">Focus Timer</h3>
+      <h3 className="panel-title">Focus</h3>
       <div className="section">
-        <div className="row between">
-          <strong>{title}</strong>
-          <span className="small">Round {round} / {settings.roundsUntilLong}</span>
+        <div className="mode-tabs row center">
+          <button className={`mode-btn ${mode === 'focus' ? 'active' : ''}`} onClick={() => switchMode('focus')} aria-pressed={mode === 'focus'}>Focus</button>
+          <button className={`mode-btn ${mode === 'short' ? 'active' : ''}`} onClick={() => switchMode('short')} aria-pressed={mode === 'short'}>Short</button>
+          <button className={`mode-btn ${mode === 'long' ? 'active' : ''}`} onClick={() => switchMode('long')} aria-pressed={mode === 'long'}>Long</button>
         </div>
-        <div className="timer-display">{fmt(remaining)}</div>
-        <div className="row center">
-          {!running ? <button className="btn success" onClick={start}>Start</button> : <button className="btn secondary" onClick={pause}>Pause</button>}
-          <button className="btn secondary" onClick={reset}>Reset</button>
-          <button className="btn" onClick={() => setMode('focus')}>Focus</button>
-          <button className="btn" onClick={() => setMode('short')}>Short</button>
-          <button className="btn" onClick={() => setMode('long')}>Long</button>
+
+        <div className="timer-wrap">
+          <svg className="timer-ring" viewBox="0 0 200 200" width="200" height="200" aria-label={`${title} timer`}>
+            <circle cx="100" cy="100" r={radius} stroke="var(--border)" strokeWidth="14" fill="none" />
+            <circle
+              cx="100"
+              cy="100"
+              r={radius}
+              stroke="var(--primary)"
+              strokeWidth="14"
+              fill="none"
+              strokeDasharray={dash}
+              strokeDashoffset={offset}
+              strokeLinecap="round"
+              transform="rotate(-90 100 100)"
+            />
+            <text x="100" y="108" textAnchor="middle" fontSize="32" fontWeight="800" fill="currentColor">{fmt(remaining)}</text>
+          </svg>
+          <div className="row center">
+            {!running ? (
+              <button className="btn success" onClick={start}>Start</button>
+            ) : (
+              <button className="btn secondary" onClick={pause}>Pause</button>
+            )}
+            <button className="btn secondary" onClick={reset}>Reset</button>
+          </div>
+          <div className="row between">
+            <span className="small">{title}</span>
+            <span className="small">Round {round} / {settings.roundsUntilLong}</span>
+          </div>
         </div>
+
         <div className="grid">
           <div className="panel">
             <h4 className="panel-title">Settings</h4>
