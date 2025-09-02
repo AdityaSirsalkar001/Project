@@ -25,6 +25,21 @@ const tabs = [
 export default function App() {
   const [tab, setTab] = useState(() => localStorage.getItem('prodapp:tab') || 'home');
   function selectTab(k) { setTab(k); localStorage.setItem('prodapp:tab', k); }
+  function accentForTab(k) {
+    switch (k) {
+      case 'tasks': return 'teal';
+      case 'notes': return 'amber';
+      case 'planner': return 'purple';
+      case 'analytics': return 'rose';
+      case 'settings': return 'teal';
+      case 'profile': return 'purple';
+      case 'focus': return 'blue';
+      default: return 'blue';
+    }
+  }
+  useEffect(() => {
+    document.body.setAttribute('data-accent', accentForTab(tab));
+  }, [tab]);
   useEffect(() => {
     const current = tabs.find(t => t.key === tab)?.label || 'App';
     document.title = `FocusFlow — ${current}`;
@@ -50,7 +65,7 @@ export default function App() {
           <div key={tab} className="page-animate">
             {tab === 'home' && <Home goTo={selectTab} />}
             {tab === 'focus' && (
-              <div className="grid" style={{ gridTemplateColumns: '1fr' }}>
+              <div className="grid section-accent-focus" style={{ gridTemplateColumns: '1fr' }}>
                 <FocusTimer />
               </div>
             )}
