@@ -3,11 +3,7 @@ import { useAuth } from '../lib/AuthProvider.jsx';
 import AuthForm from './AuthForm.jsx';
 
 export default function Profile() {
-  const { user, supabase } = useAuth();
-
-  if (!supabase) {
-    return <AuthForm />;
-  }
+  const { user, signOut } = useAuth();
 
   if (!user) {
     return <AuthForm />;
@@ -15,10 +11,6 @@ export default function Profile() {
 
   const email = user.email || (user.user_metadata && user.user_metadata.email) || '';
   const name = user.user_metadata?.full_name || user.user_metadata?.name || '';
-
-  async function signOut() {
-    await supabase.auth.signOut();
-  }
 
   return (
     <div className="panel">
