@@ -2,31 +2,21 @@ import React, { useState } from 'react';
 import { useAuth } from '../lib/AuthProvider.jsx';
 
 export default function AuthForm() {
-  const { supabase } = useAuth();
+  const { signIn, signUp, signInWithGoogle, mode } = useAuth();
   const [mode, setMode] = useState('signin'); // signin | signup
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  if (!supabase) {
-    return (
-      <div className="panel">
-        <h4 className="panel-title">Authentication not configured</h4>
-        <p className="small">To enable Sign in/Sign up (including Google), connect Supabase and set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in settings. Then reload.</p>
-      </div>
-    );
-  }
 
   async function handleEmailAuth(e) {
     e.preventDefault(); setError(''); setLoading(true);
     try {
       if (mode === 'signin') {
-        const { error: err } = await supabase.auth.signInWithPassword({ email, password });
-        if (err) throw err;
+        await signIn(email, password);
       } else {
-        const { error: err } = await supabase.auth.signUp({ email, password });
-        if (err) throw err;
+        await signUp(email, password);
       }
     } catch (err) {
       setError(err.message || 'Authentication error');
@@ -35,9 +25,7 @@ export default function AuthForm() {
 
   async function handleGoogle() {
     setError('');
-    const redirectTo = window.location.origin;
-    const { error: err } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo } });
-    if (err) setError(err.message || 'OAuth error');
+    try { await signInWithGoogle(); } catch (err) { setError(err.message || 'OAuth error'); }
   }
 
   return (
