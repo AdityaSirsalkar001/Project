@@ -9,6 +9,7 @@ import { AuthProvider } from './lib/AuthProvider.jsx';
 import Profile from './components/Profile.jsx';
 import Settings from './components/Settings.jsx';
 import Analytics from './components/Analytics.jsx';
+import CommandPalette from './components/CommandPalette.jsx';
 
 const tabs = [
   { key: 'home', label: 'Home' },
