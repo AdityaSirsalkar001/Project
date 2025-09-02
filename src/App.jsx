@@ -14,7 +14,9 @@ const tabs = [
   { key: 'focus', label: 'Focus' },
   { key: 'tasks', label: 'Tasks' },
   { key: 'notes', label: 'Notes' },
-  { key: 'planner', label: 'Planner' }
+  { key: 'planner', label: 'Planner' },
+  { key: 'settings', label: 'Settings' },
+  { key: 'profile', label: 'Profile' }
 ];
 
 export default function App() {
