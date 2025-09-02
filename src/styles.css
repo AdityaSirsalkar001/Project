@@ -203,6 +203,18 @@ html[data-theme="dark"] .palette-item:hover { background: rgba(255,255,255,.06);
 .brand-logo { display: inline-flex; vertical-align: middle; margin-right: 8px; }
 .avatar { width: 40px; height: 40px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--primary); color: var(--primary-contrast); font-weight: 800; }
 
+/* Auth */
+.auth-switch { margin-bottom: 8px; }
+.auth-form { margin-top: 6px; }
+
+/* Section accents */
+.section-accent-notes { --primary: var(--accent-amber); }
+.section-accent-tasks { --primary: var(--accent-teal); }
+.section-accent-planner { --primary: var(--accent-purple); }
+.section-accent-analytics { --primary: var(--accent-rose); }
+.section-accent-profile { --primary: var(--accent-purple); }
+.section-accent-settings { --primary: var(--accent-teal); }
+
 /* Chips */
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel); color: var(--text); }
 .now-chip { font-variant-numeric: tabular-nums; color: var(--muted); }
