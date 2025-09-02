@@ -17,6 +17,10 @@ const tabs = [
 export default function App() {
   const [tab, setTab] = useState(() => localStorage.getItem('prodapp:tab') || 'home');
   function selectTab(k) { setTab(k); localStorage.setItem('prodapp:tab', k); }
+  useEffect(() => {
+    const current = tabs.find(t => t.key === tab)?.label || 'App';
+    document.title = `FocusFlow — ${current}`;
+  }, [tab]);
 
   return (
     <div className="app-shell">
