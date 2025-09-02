@@ -45,6 +45,14 @@ body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI
 .tab-btn:hover { color: var(--text); background: rgba(0,0,0,.04); }
 html[data-theme="dark"] .tab-btn:hover { background: rgba(255,255,255,.04); }
 .tab-btn.active { color: #fff; background: var(--primary); }
+body[data-accent="blue"] .tab-btn.active { background: var(--primary); box-shadow: 0 6px 18px rgba(37,99,235,.3); }
+body[data-accent="teal"] .tab-btn.active { background: var(--accent-teal); box-shadow: 0 6px 18px rgba(20,184,166,.3); color: #062522; }
+body[data-accent="amber"] .tab-btn.active { background: var(--accent-amber); box-shadow: 0 6px 18px rgba(245,158,11,.35); color: #231a00; }
+body[data-accent="purple"] .tab-btn.active { background: var(--accent-purple); box-shadow: 0 6px 18px rgba(124,58,237,.35); }
+body[data-accent="rose"] .tab-btn.active { background: var(--accent-rose); box-shadow: 0 6px 18px rgba(244,63,94,.35); }
+
+.section-accent-focus { --primary: #2563eb; }
+.focus-accent { background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 14%, transparent) 0%, transparent 60%), var(--panel); }
 
 .toolbar { display: flex; gap: 8px; align-items: center; }
 .toggle-theme { background: var(--panel); color: var(--text); border: 1px solid var(--border); padding: 8px 10px; border-radius: 999px; cursor: pointer; }
