@@ -9,6 +9,10 @@
   --danger: #dc2626;
   --warning: #f59e0b;
   --border: #e2e8f0;
+  --accent-purple: #7c3aed;
+  --accent-teal: #14b8a6;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
 }
 
 html[data-theme="dark"] {
@@ -22,6 +26,10 @@ html[data-theme="dark"] {
   --danger: #f87171;
   --warning: #fbbf24;
   --border: #1f2937;
+  --accent-purple: #a78bfa;
+  --accent-teal: #2dd4bf;
+  --accent-amber: #fbbf24;
+  --accent-rose: #fb7185;
 }
 
 * { box-sizing: border-box; }
@@ -81,6 +89,10 @@ html[data-theme="dark"] .planner-cell:focus { background: rgba(96,165,250,.10); 
 .btn.secondary { background: var(--panel); color: var(--text); border: 1px solid var(--border); }
 .btn.danger { background: var(--danger); border-color: var(--danger); }
 .btn.success { background: var(--success); border-color: var(--success); }
+.btn.purple { background: var(--accent-purple); border-color: var(--accent-purple); color: #fff; }
+.btn.teal { background: var(--accent-teal); border-color: var(--accent-teal); color: #062522; }
+.btn.rose { background: var(--accent-rose); border-color: var(--accent-rose); color: #fff; }
+.btn.amber { background: var(--accent-amber); border-color: var(--accent-amber); color: #231a00; }
 
 .list { display: grid; gap: 8px; margin: 10px 0 0; padding: 0; list-style: none; }
 .list-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px; border: 1px solid var(--border); border-radius: 10px; }
@@ -111,6 +123,10 @@ html[data-theme="dark"] .planner-cell:focus { background: rgba(96,165,250,.10); 
 .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
 @media (min-width: 900px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
 .stat-card { padding: 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--panel); box-shadow: inset 0 1px 0 rgba(255,255,255,.03), 0 10px 30px rgba(0,0,0,.05); }
+.stat-card.purple { box-shadow: inset 0 0 0 2px var(--accent-purple), 0 10px 30px rgba(124,58,237,.15); }
+.stat-card.teal { box-shadow: inset 0 0 0 2px var(--accent-teal), 0 10px 30px rgba(20,184,166,.15); }
+.stat-card.amber { box-shadow: inset 0 0 0 2px var(--accent-amber), 0 10px 30px rgba(245,158,11,.15); }
+.stat-card.rose { box-shadow: inset 0 0 0 2px var(--accent-rose), 0 10px 30px rgba(244,63,94,.15); }
 .stat-value { font-size: 28px; font-weight: 800; }
 .stat-label { color: var(--muted); font-size: 12px; }
 
@@ -136,6 +152,14 @@ html[data-theme="dark"] .planner-cell:focus { background: rgba(96,165,250,.10); 
 .mode-tabs { gap: 6px; }
 .mode-btn { background: var(--panel); color: var(--text); border: 1px solid var(--border); padding: 6px 12px; border-radius: 999px; cursor: pointer; }
 .mode-btn.active { background: var(--primary); color: var(--primary-contrast); border-color: var(--primary); }
+.mode-btn.focus-variant.active { background: var(--primary); border-color: var(--primary); }
+.mode-btn.short-variant.active { background: var(--accent-amber); border-color: var(--accent-amber); color: #231a00; }
+.mode-btn.long-variant.active { background: var(--accent-purple); border-color: var(--accent-purple); }
+
+/* Accents for timer ring/text */
+.accent-blue { color: var(--primary); }
+.accent-amber { color: var(--accent-amber); }
+.accent-purple { color: var(--accent-purple); }
 
 /* Settings table */
 .settings-table { display: grid; gap: 8px; }
