@@ -71,10 +71,10 @@ export default function Home({ goTo }) {
         <div className="panel compact">
           <h3 className="panel-title">Jump back in</h3>
           <div className="quick-actions">
-            <button className="btn" onClick={() => goTo('focus')}>Focus</button>
-            <button className="btn" onClick={() => goTo('tasks')}>Tasks</button>
-            <button className="btn" onClick={() => goTo('notes')}>Notes</button>
-            <button className="btn" onClick={() => goTo('planner')}>Planner</button>
+            <button className="btn teal" onClick={() => goTo('focus')}>Focus</button>
+            <button className="btn amber" onClick={() => goTo('tasks')}>Tasks</button>
+            <button className="btn purple" onClick={() => goTo('notes')}>Notes</button>
+            <button className="btn rose" onClick={() => goTo('planner')}>Planner</button>
           </div>
         </div>
         <div className="panel">
