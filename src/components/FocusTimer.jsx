@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useInterval } from '../lib/hooks.js';
 import { usePersistentState } from '../lib/hooks.js';
 
@@ -66,12 +66,12 @@ export default function FocusTimer() {
     <div className="panel">
       <h3 className="panel-title">Focus Timer</h3>
       <div className="section">
-        <div className="row" style={{ justifyContent: 'space-between' }}>
+        <div className="row between">
           <strong>{title}</strong>
           <span className="small">Round {round} / {settings.roundsUntilLong}</span>
         </div>
-        <div style={{ fontSize: 48, textAlign: 'center', fontWeight: 800 }}>{fmt(remaining)}</div>
-        <div className="row" style={{ justifyContent: 'center' }}>
+        <div className="timer-display">{fmt(remaining)}</div>
+        <div className="row center">
           {!running ? <button className="btn success" onClick={start}>Start</button> : <button className="btn secondary" onClick={pause}>Pause</button>}
           <button className="btn secondary" onClick={reset}>Reset</button>
           <button className="btn" onClick={() => setMode('focus')}>Focus</button>
