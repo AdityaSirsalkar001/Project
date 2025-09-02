@@ -163,10 +163,20 @@ html[data-theme="dark"] .planner-cell:focus { background: rgba(96,165,250,.10); 
 /* Heatmap */
 .heatmap { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; }
 .cell { width: 36px; height: 36px; border-radius: 8px; background: var(--border); }
-.cell.lvl1 { background: rgba(20,184,166,.35); }
-.cell.lvl2 { background: rgba(124,58,237,.35); }
-.cell.lvl3 { background: rgba(245,158,11,.45); }
-.cell.lvl4 { background: rgba(244,63,94,.6); }
+.cell.lvl1 { background: color-mix(in oklab, var(--accent-teal) 35%, transparent); }
+.cell.lvl2 { background: color-mix(in oklab, var(--accent-purple) 35%, transparent); }
+.cell.lvl3 { background: color-mix(in oklab, var(--accent-amber) 45%, transparent); }
+.cell.lvl4 { background: color-mix(in oklab, var(--accent-rose) 60%, transparent); }
+
+/* Bars */
+.bar-grid { display: grid; gap: 8px; margin-top: 12px; }
+.bar-row { display: grid; grid-template-columns: 64px 1fr 48px; gap: 10px; align-items: center; }
+.bar-label { color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar { height: 10px; background: var(--border); border-radius: 999px; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--primary); border-radius: 999px; box-shadow: 0 6px 16px rgba(37,99,235,.25) inset; }
+.bar-fill.amber { background: var(--accent-amber); box-shadow: 0 6px 16px rgba(245,158,11,.25) inset; }
+
+.bar-value { font-variant-numeric: tabular-nums; color: var(--muted); }
 
 /* Utilities */
 .timer-display { font-size: 48px; text-align: center; font-weight: 800; }
