@@ -30,6 +30,7 @@ export default function App() {
     document.title = `FocusFlow — ${current}`;
   }, [tab]);
 
+  const [paletteOpen, setPaletteOpen] = useState(false);
   return (
     <AuthProvider>
       <div className="app-shell">
@@ -62,6 +63,7 @@ export default function App() {
           </div>
         </main>
       </div>
+      <CommandPalette open={paletteOpen} onClose={(v)=> setPaletteOpen(!!v)} goTo={selectTab} />
     </AuthProvider>
   );
 }
