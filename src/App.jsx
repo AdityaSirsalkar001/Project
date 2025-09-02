@@ -21,13 +21,14 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="header-bar">
-        <div className="brand-title">Productivity</div>
+        <div className="brand-title">FocusFlow</div>
         <nav className="nav-tabs">
           {tabs.map(t => (
             <button key={t.key} className={`tab-btn ${tab === t.key ? 'active' : ''}`} onClick={() => selectTab(t.key)}>{t.label}</button>
           ))}
         </nav>
         <div className="toolbar">
+          <div className="chip now-chip" aria-label="Current date and time">{new Date().toLocaleString()}</div>
           <ThemeToggle />
         </div>
       </header>
