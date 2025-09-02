@@ -120,7 +120,7 @@ export default function FocusTimer() {
     }
   }
 
-  function start() { setRunning(true); playStart(); }
+  function start() { setRunning(true); if (loadLS('settings:sound', true)) playStart(); }
   function pause() { setRunning(false); playPause(); }
   function reset() { setRunning(false); setRemaining(total); }
 
