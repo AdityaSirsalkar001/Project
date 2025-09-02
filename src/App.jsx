@@ -54,12 +54,12 @@ export default function App() {
                 <FocusTimer />
               </div>
             )}
-            {tab === 'tasks' && <TodoList />}
-            {tab === 'notes' && <Notes />}
-            {tab === 'planner' && <DayPlanner />}
-            {tab === 'analytics' && <Analytics />}
-            {tab === 'settings' && <Settings />}
-            {tab === 'profile' && <Profile />}
+            {tab === 'tasks' && <div className="section-accent-tasks"><TodoList /></div>}
+            {tab === 'notes' && <div className="section-accent-notes"><Notes /></div>}
+            {tab === 'planner' && <div className="section-accent-planner"><DayPlanner /></div>}
+            {tab === 'analytics' && <div className="section-accent-analytics"><Analytics /></div>}
+            {tab === 'settings' && <div className="section-accent-settings"><Settings /></div>}
+            {tab === 'profile' && <div className="section-accent-profile"><Profile /></div>}
           </div>
         </main>
       </div>
