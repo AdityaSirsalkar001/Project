@@ -1,5 +1,6 @@
 import React from 'react';
 import { load } from '../lib/storage.js';
+import { useAuth } from '../lib/AuthProvider.jsx';
 
 function dateKey(d = new Date()) {
   const y = d.getFullYear();
@@ -33,13 +34,15 @@ export default function Home({ goTo }) {
   const plannedTomorrow = planner[tomorrowKey] ? Object.values(planner[tomorrowKey]).filter(Boolean).length : 0;
 
   const recentNotes = Array.isArray(notes) ? notes.slice(0, 4) : [];
+  const { user } = useAuth();
+  const preferredName = (load('profile:name','') || user?.user_metadata?.full_name || user?.email?.split('@')[0] || '').trim();
 
   return (
     <section className="home">
       <div className="hero">
         <div className="hero-content">
-          <div className="badge">Premium productivity</div>
           <h1 className="hero-title">FocusFlow — Your calm space to get things done</h1>
+          {preferredName && <div className="small">Welcome back, {preferredName}.</div>}
           <p className="hero-subtitle">Deep focus timer, powerful tasks, flexible planner, and quick notes. Everything designed for flow.</p>
           <div className="cta-group">
             <button className="btn" onClick={() => goTo('focus')}>Start a focus session</button>
