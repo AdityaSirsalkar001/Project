@@ -221,7 +221,7 @@ export default function FocusTimer() {
           )}
 
           {!isFs && (
-            <div className="grid">
+            <div className="section">
               <div className="panel">
                 <h4 className="panel-title">Settings</h4>
                 <div className="settings-table">
