@@ -32,12 +32,11 @@ body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI
 .header-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 24px; }
 .brand-title { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
 
-.nav-tabs { display: flex; gap: 2px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-.tab-btn { background: transparent; color: var(--muted); border: 0; padding: 10px 12px; border-radius: 8px; cursor: pointer; position: relative; }
-.tab-btn::after { content: ""; position: absolute; left: 8px; right: 8px; bottom: -7px; height: 3px; background: transparent; border-radius: 4px; transition: background .15s ease; }
-.tab-btn:hover { color: var(--text); }
-.tab-btn.active { color: var(--text); }
-.tab-btn.active::after { background: var(--primary); }
+.nav-tabs { display: flex; gap: 6px; flex-wrap: wrap; background: var(--panel); border: 1px solid var(--border); padding: 6px; border-radius: 12px; }
+.tab-btn { background: transparent; color: var(--muted); border: 0; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
+.tab-btn:hover { color: var(--text); background: rgba(0,0,0,.04); }
+html[data-theme="dark"] .tab-btn:hover { background: rgba(255,255,255,.04); }
+.tab-btn.active { color: var(--primary-contrast); background: var(--primary); }
 
 .toolbar { display: flex; gap: 8px; align-items: center; }
 .toggle-theme { background: var(--panel); color: var(--text); border: 1px solid var(--border); padding: 8px 10px; border-radius: 999px; cursor: pointer; }
