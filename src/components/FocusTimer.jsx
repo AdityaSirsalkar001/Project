@@ -195,10 +195,10 @@ export default function FocusTimer() {
           )}
 
           {modeType === 'stopwatch' && (
-            <div className="timer-wrap">
+            <div className="timer-wrap accent-teal">
               <svg className="timer-ring" viewBox="0 0 220 220" width={isFs ? 300 : 240} height={isFs ? 300 : 240} aria-label={`Stopwatch`}>
                 <circle cx="110" cy="110" r={radius} stroke="var(--border)" strokeWidth="14" fill="none" />
-                <circle cx="110" cy="110" r={radius} stroke="var(--primary)" strokeWidth="14" fill="none" strokeDasharray={dash} strokeDashoffset={offset} strokeLinecap="round" transform="rotate(-90 110 110)" />
+                <circle cx="110" cy="110" r={radius} stroke="currentColor" strokeWidth="14" fill="none" strokeDasharray={dash} strokeDashoffset={offset} strokeLinecap="round" transform="rotate(-90 110 110)" />
                 <text x="110" y="118" textAnchor="middle" fontSize={isFs ? 44 : 36} fontWeight="800" fill="currentColor">{fmt(swElapsed)}</text>
               </svg>
               <div className="row center">
