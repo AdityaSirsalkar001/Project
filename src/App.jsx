@@ -4,8 +4,10 @@ import TodoList from './components/TodoList.jsx';
 import Notes from './components/Notes.jsx';
 import DayPlanner from './components/DayPlanner.jsx';
 import ThemeToggle from './components/ThemeToggle.jsx';
+import Home from './components/Home.jsx';
 
 const tabs = [
+  { key: 'home', label: 'Home' },
   { key: 'focus', label: 'Focus' },
   { key: 'tasks', label: 'Tasks' },
   { key: 'notes', label: 'Notes' },
@@ -13,7 +15,7 @@ const tabs = [
 ];
 
 export default function App() {
-  const [tab, setTab] = useState(() => localStorage.getItem('prodapp:tab') || 'focus');
+  const [tab, setTab] = useState(() => localStorage.getItem('prodapp:tab') || 'home');
   function selectTab(k) { setTab(k); localStorage.setItem('prodapp:tab', k); }
 
   return (
@@ -31,6 +33,7 @@ export default function App() {
       </header>
 
       <main className="section">
+        {tab === 'home' && <Home goTo={selectTab} />}
         {tab === 'focus' && (
           <div className="grid">
             <FocusTimer />
