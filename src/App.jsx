@@ -5,6 +5,9 @@ import Notes from './components/Notes.jsx';
 import DayPlanner from './components/DayPlanner.jsx';
 import ThemeToggle from './components/ThemeToggle.jsx';
 import Home from './components/Home.jsx';
+import { AuthProvider } from './lib/AuthProvider.jsx';
+import Profile from './components/Profile.jsx';
+import Settings from './components/Settings.jsx';
 
 const tabs = [
   { key: 'home', label: 'Home' },
