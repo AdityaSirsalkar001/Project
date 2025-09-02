@@ -45,7 +45,7 @@ export default function DayPlanner() {
         {hoursRange().map(h => (
           <div className="planner-row" key={h}>
             <div className="planner-time">{String(h).padStart(2, '0')}:00</div>
-            <textarea className="planner-cell" value={daySlots[h] || ''} onChange={e => setSlot(h, e.target.value)} placeholder="Add plans, goals, meetings, or priorities" />
+            <textarea className="planner-cell" value={daySlots[h] || ''} onChange={e => setSlot(h, e.target.value)} placeholder="Add event, task, or note" />
           </div>
         ))}
       </div>
