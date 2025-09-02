@@ -31,11 +31,11 @@ export default function AuthForm() {
   return (
     <div className="panel">
       <h4 className="panel-title">{mode === 'signin' ? 'Sign in' : 'Sign up'}</h4>
-      <div className="row wrap" style={{ gap: 6 }}>
+      <div className="row wrap auth-switch" style={{ gap: 6 }}>
         <button className={`mode-btn ${mode === 'signin' ? 'active' : ''}`} onClick={() => setMode('signin')}>Sign in</button>
         <button className={`mode-btn ${mode === 'signup' ? 'active' : ''}`} onClick={() => setMode('signup')}>Sign up</button>
       </div>
-      <form className="section" onSubmit={handleEmailAuth}>
+      <form className="section auth-form" onSubmit={handleEmailAuth}>
         <label>
           <div className="small">Email</div>
           <input className="input" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
