@@ -15,6 +15,7 @@ const tabs = [
   { key: 'tasks', label: 'Tasks' },
   { key: 'notes', label: 'Notes' },
   { key: 'planner', label: 'Planner' },
+  { key: 'analytics', label: 'Analytics' },
   { key: 'settings', label: 'Settings' },
   { key: 'profile', label: 'Profile' }
 ];
