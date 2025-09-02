@@ -103,6 +103,16 @@ body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI
 .two-col-grid { grid-template-columns: 1fr; }
 @media (min-width: 900px) { .two-col-grid { grid-template-columns: 1fr 1fr; } }
 
+/* Focus */
+.timer-wrap { display: grid; gap: 12px; justify-items: center; }
+.timer-ring { filter: drop-shadow(0 10px 24px rgba(37,99,235,.2)); }
+.mode-tabs { gap: 6px; }
+.mode-btn { background: var(--panel); color: var(--text); border: 1px solid var(--border); padding: 6px 12px; border-radius: 999px; cursor: pointer; }
+.mode-btn.active { background: var(--primary); color: var(--primary-contrast); border-color: var(--primary); }
+
+/* Brand */
+.brand-logo { display: inline-flex; vertical-align: middle; margin-right: 8px; }
+
 /* Chips */
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel); color: var(--text); }
 .now-chip { font-variant-numeric: tabular-nums; color: var(--muted); }
