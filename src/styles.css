@@ -50,6 +50,9 @@ body[data-accent="teal"] .tab-btn.active { background: var(--accent-teal); box-s
 body[data-accent="amber"] .tab-btn.active { background: var(--accent-amber); box-shadow: 0 6px 18px rgba(245,158,11,.35); color: #231a00; }
 body[data-accent="purple"] .tab-btn.active { background: var(--accent-purple); box-shadow: 0 6px 18px rgba(124,58,237,.35); }
 body[data-accent="rose"] .tab-btn.active { background: var(--accent-rose); box-shadow: 0 6px 18px rgba(244,63,94,.35); }
+html[data-theme="dark"] body[data-accent="blue"] .tab-btn.active { background: #93c5fd; color: #0b0f1a; }
+html[data-theme="dark"] body[data-accent="amber"] .tab-btn.active { background: #facc15; color: #231a00; }
+html[data-theme="dark"] body[data-accent="purple"] .tab-btn.active { background: #c4b5fd; color: #0b0f1a; }
 
 .section-accent-focus { --primary: #2563eb; }
 .focus-accent { background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 14%, transparent) 0%, transparent 60%), var(--panel); }
