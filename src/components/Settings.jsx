@@ -12,6 +12,38 @@ export default function Settings() {
     autoStartFocus: true
   });
 
+  function exportCSV(filename, rows) {
+    const csv = rows.map(r => Object.values(r).map(v => JSON.stringify(v ?? '')).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url);
+  }
+  function exportTasks() {
+    const todos = JSON.parse(localStorage.getItem('prodapp:todos') || '[]');
+    exportCSV('tasks.csv', todos);
+  }
+  function exportNotes() {
+    const notes = JSON.parse(localStorage.getItem('prodapp:notes') || '[]');
+    exportCSV('notes.csv', notes);
+  }
+  function exportPlannerICS() {
+    const planner = JSON.parse(localStorage.getItem('prodapp:planner') || '{}');
+    let ics = 'BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//FocusFlow//EN\n';
+    for (const [day, slots] of Object.entries(planner)) {
+      for (const [hour, text] of Object.entries(slots || {})) {
+        if (!text) continue;
+        const start = new Date(day + 'T' + String(hour).padStart(2,'0') + ':00:00');
+        const end = new Date(start.getTime() + 60*60*1000);
+        const dt = (d)=> d.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+        ics += `BEGIN:VEVENT\nUID:${crypto.randomUUID()}\nDTSTAMP:${dt(new Date())}\nDTSTART:${dt(start)}\nDTEND:${dt(end)}\nSUMMARY:${text.replace(/\n/g,' ')}\nEND:VEVENT\n`;
+      }
+    }
+    ics += 'END:VCALENDAR';
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8;' });
+    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'planner.ics'; a.click(); URL.revokeObjectURL(url);
+  }
+
+  const [soundEnabled, setSoundEnabled] = usePersistentState('settings:sound', true);
+
   return (
     <div className="panel">
       <h3 className="panel-title">Settings</h3>
@@ -19,6 +51,20 @@ export default function Settings() {
         <div className="panel compact">
           <h4 className="panel-title">Appearance</h4>
           <div className="row"><ThemeToggle /></div>
+        </div>
+        <div className="panel compact">
+          <h4 className="panel-title">Audio</h4>
+          <div className="settings-table">
+            <div className="settings-row">
+              <div className="settings-label">Sounds</div>
+              <div className="settings-control">
+                <label className="switch">
+                  <input type="checkbox" checked={soundEnabled} onChange={e => setSoundEnabled(e.target.checked)} />
+                  <span className="slider" />
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
         <div className="panel">
           <h4 className="panel-title">Focus Timer</h4>
