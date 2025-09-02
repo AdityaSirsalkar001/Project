@@ -27,12 +27,12 @@ export default function Notes() {
         <button className="btn" onClick={addNote}>New Note</button>
         <input className="input" placeholder="Search" value={query} onChange={e => setQuery(e.target.value)} />
       </div>
-      <div className="grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+      <div className="grid two-col-grid">
         {filtered.map(n => (
           <div key={n.id} className="panel">
             <input className="input" value={n.title} onChange={e => setTitle(n.id, e.target.value)} />
             <textarea className="textarea" value={n.content} onChange={e => setContent(n.id, e.target.value)} />
-            <div className="row" style={{ justifyContent: 'space-between' }}>
+            <div className="row between">
               <span className="small">Edited {new Date(n.updatedAt).toLocaleString()}</span>
               <button className="btn danger" onClick={() => remove(n.id)}>Delete</button>
             </div>
