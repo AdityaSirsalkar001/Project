@@ -153,6 +153,7 @@ html[data-theme="dark"] .planner-cell:focus { background: rgba(96,165,250,.10); 
 
 /* Brand */
 .brand-logo { display: inline-flex; vertical-align: middle; margin-right: 8px; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; display: inline-grid; place-items: center; background: var(--primary); color: var(--primary-contrast); font-weight: 800; }
 
 /* Chips */
 .chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel); color: var(--text); }
