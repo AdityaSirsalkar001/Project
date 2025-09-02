@@ -1,6 +1,8 @@
 import React from 'react';
 import { useAuth } from '../lib/AuthProvider.jsx';
 import AuthForm from './AuthForm.jsx';
+import { usePersistentState } from '../lib/hooks.js';
+import Analytics from './Analytics.jsx';
 
 export default function Profile() {
   const { user, signOut } = useAuth();
