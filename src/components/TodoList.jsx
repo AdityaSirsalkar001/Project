@@ -93,10 +93,10 @@ export default function TodoList() {
               <input className="input" value={item.text} onChange={e => edit(item.id, e.target.value)} />
             </div>
             <div className="item-actions">
-              <input className="input" placeholder="Project" style={{ width: 120 }} value={item.project || ''} onChange={e => setItem(item.id, { project: e.target.value })} />
-              <input className="input" placeholder="tags e.g. work,writing" style={{ width: 160 }} value={(item.tags || []).join(', ')} onChange={e => setItem(item.id, { tags: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} />
-              <input className="input" type="datetime-local" value={item.dueAt ? new Date(item.dueAt).toISOString().slice(0,16) : ''} onChange={e => setItem(item.id, { dueAt: e.target.value ? new Date(e.target.value).getTime() : null })} />
-              <select className="select" value={item.recurring || 'none'} onChange={e => setItem(item.id, { recurring: e.target.value })}>
+              <input className="input project-input" placeholder="Project" value={item.project || ''} onChange={e => setItem(item.id, { project: e.target.value })} />
+              <input className="input tags-input" placeholder="tags e.g. work,writing" value={(item.tags || []).join(', ')} onChange={e => setItem(item.id, { tags: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} />
+              <input className="input due-input" type="datetime-local" value={item.dueAt ? new Date(item.dueAt).toISOString().slice(0,16) : ''} onChange={e => setItem(item.id, { dueAt: e.target.value ? new Date(e.target.value).getTime() : null })} />
+              <select className="select recur-select" value={item.recurring || 'none'} onChange={e => setItem(item.id, { recurring: e.target.value })}>
                 <option value="none">One-time</option>
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
