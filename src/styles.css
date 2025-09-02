@@ -102,6 +102,11 @@ html[data-theme="dark"] .tab-btn:hover { background: rgba(255,255,255,.04); }
 .two-col-grid { grid-template-columns: 1fr; }
 @media (min-width: 900px) { .two-col-grid { grid-template-columns: 1fr 1fr; } }
 
+.page-animate { animation: fade-in .22s ease both; }
+@keyframes fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+.btn, .input, .select, .textarea, .tab-btn, .mode-btn, .brand-title, .brand-logo svg, .brand-logo path { transition: background-color .25s ease, color .25s ease, border-color .25s ease, fill .25s ease, stroke .25s ease, box-shadow .25s ease; }
+
 /* Focus */
 .timer-wrap { display: grid; gap: 12px; justify-items: center; }
 .timer-ring { filter: drop-shadow(0 10px 24px rgba(37,99,235,.2)); }
