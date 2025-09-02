@@ -71,18 +71,18 @@ export default function TodoList() {
   return (
     <div className="panel">
       <h3 className="panel-title">Tasks</h3>
-      <div className="row wrap">
-        <input className="input" placeholder="Add a task" value={text} onChange={e => setText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') addItem(); }} />
+      <div className="row filters-row">
+        <input className="input task-add-input" placeholder="Add a task" value={text} onChange={e => setText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') addItem(); }} />
         <button className="btn" onClick={addItem}>Add</button>
-        <select className="select" value={filter} onChange={e => setFilter(e.target.value)}>
+        <select className="select status-filter" value={filter} onChange={e => setFilter(e.target.value)}>
           <option value="all">All</option>
           <option value="active">Active</option>
           <option value="done">Completed</option>
         </select>
-        <select className="select" value={project} onChange={e => setProject(e.target.value)}>
+        <select className="select project-filter" value={project} onChange={e => setProject(e.target.value)}>
           {projects.map(p => <option key={p} value={p}>{p}</option>)}
         </select>
-        <input className="input" placeholder="Filter tags (comma)" value={tagsFilter} onChange={e => setTagsFilter(e.target.value)} />
+        <input className="input tags-filter" placeholder="Filter tags (comma)" value={tagsFilter} onChange={e => setTagsFilter(e.target.value)} />
         <button className="btn secondary" onClick={clearCompleted}>Clear Completed</button>
       </div>
       <ul className="list">
