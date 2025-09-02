@@ -144,28 +144,35 @@ export default function FocusTimer() {
   const progress = modeType === 'timer' ? Math.max(0, Math.min(1, remaining / total)) : 1 - ((swElapsed % 60) / 60);
   const dash = circumference; const offset = dash * (1 - progress);
 
+  function stopTimer() { setRunning(false); setRemaining(total); }
+  function stopStopwatch() { if (swElapsed > 0 && swActive) { incTodaySessions(); } setSwRunning(false); setSwElapsed(0); setSwActive(false); }
+
   return (
     <div ref={wrapRef} className={isFs ? 'focus-fullscreen' : ''}>
       <div className="panel">
         <h3 className="panel-title">Focus</h3>
         <div className="section">
-          <div className="row center" style={{ gap: 8 }}>
-            <button className={`mode-btn ${modeType === 'timer' ? 'active' : ''}`} onClick={() => setModeType('timer')}>Timer</button>
-            <button className={`mode-btn ${modeType === 'stopwatch' ? 'active' : ''}`} onClick={() => setModeType('stopwatch')}>Stopwatch</button>
-          </div>
+          {!isFs && (
+            <div className="row center" style={{ gap: 8 }}>
+              <button className={`mode-btn ${modeType === 'timer' ? 'active' : ''}`} onClick={() => setModeType('timer')}>Timer</button>
+              <button className={`mode-btn ${modeType === 'stopwatch' ? 'active' : ''}`} onClick={() => setModeType('stopwatch')}>Stopwatch</button>
+            </div>
+          )}
 
           {modeType === 'timer' && (
             <>
-              <div className="row center" style={{ gap: 6 }}>
-                <button className={`mode-btn ${mode === 'focus' ? 'active' : ''}`} onClick={() => switchMode('focus')} aria-pressed={mode === 'focus'}>Focus</button>
-                <button className={`mode-btn ${mode === 'short' ? 'active' : ''}`} onClick={() => switchMode('short')} aria-pressed={mode === 'short'}>Short</button>
-                <button className={`mode-btn ${mode === 'long' ? 'active' : ''}`} onClick={() => switchMode('long')} aria-pressed={mode === 'long'}>Long</button>
-              </div>
+              {!isFs && (
+                <div className="row center" style={{ gap: 6 }}>
+                  <button className={`mode-btn ${mode === 'focus' ? 'active' : ''}`} onClick={() => switchMode('focus')} aria-pressed={mode === 'focus'}>Focus</button>
+                  <button className={`mode-btn ${mode === 'short' ? 'active' : ''}`} onClick={() => switchMode('short')} aria-pressed={mode === 'short'}>Short</button>
+                  <button className={`mode-btn ${mode === 'long' ? 'active' : ''}`} onClick={() => switchMode('long')} aria-pressed={mode === 'long'}>Long</button>
+                </div>
+              )}
               <div className="timer-wrap">
-                <svg className="timer-ring" viewBox="0 0 220 220" width="240" height="240" aria-label={`${title} timer`}>
+                <svg className="timer-ring" viewBox="0 0 220 220" width={isFs ? 300 : 240} height={isFs ? 300 : 240} aria-label={`${title} timer`}>
                   <circle cx="110" cy="110" r={radius} stroke="var(--border)" strokeWidth="14" fill="none" />
                   <circle cx="110" cy="110" r={radius} stroke="var(--primary)" strokeWidth="14" fill="none" strokeDasharray={dash} strokeDashoffset={offset} strokeLinecap="round" transform="rotate(-90 110 110)" />
-                  <text x="110" y="118" textAnchor="middle" fontSize="36" fontWeight="800" fill="currentColor">{fmt(remaining)}</text>
+                  <text x="110" y="118" textAnchor="middle" fontSize={isFs ? 44 : 36} fontWeight="800" fill="currentColor">{fmt(remaining)}</text>
                 </svg>
                 <div className="row center">
                   {!running ? (
@@ -173,23 +180,26 @@ export default function FocusTimer() {
                   ) : (
                     <button className="btn secondary" onClick={pause}>Pause</button>
                   )}
-                  <button className="btn secondary" onClick={reset}>Reset</button>
-                  <button className="btn" onClick={toggleFullscreen}>{isFs ? 'Exit Fullscreen' : 'Fullscreen'}</button>
+                  {!isFs && <button className="btn secondary" onClick={reset}>Reset</button>}
+                  <button className="btn" onClick={isFs ? () => document.exitFullscreen?.() : toggleFullscreen}>{isFs ? 'Exit' : 'Fullscreen'}</button>
+                  {isFs && <button className="btn danger" onClick={stopTimer}>Stop</button>}
                 </div>
-                <div className="row between">
-                  <span className="small">{title}</span>
-                  <span className="small">Round {round} / {settings.roundsUntilLong}</span>
-                </div>
+                {!isFs && (
+                  <div className="row between">
+                    <span className="small">{title}</span>
+                    <span className="small">Round {round} / {settings.roundsUntilLong}</span>
+                  </div>
+                )}
               </div>
             </>
           )}
 
           {modeType === 'stopwatch' && (
             <div className="timer-wrap">
-              <svg className="timer-ring" viewBox="0 0 220 220" width="240" height="240" aria-label={`Stopwatch`}>
+              <svg className="timer-ring" viewBox="0 0 220 220" width={isFs ? 300 : 240} height={isFs ? 300 : 240} aria-label={`Stopwatch`}>
                 <circle cx="110" cy="110" r={radius} stroke="var(--border)" strokeWidth="14" fill="none" />
                 <circle cx="110" cy="110" r={radius} stroke="var(--primary)" strokeWidth="14" fill="none" strokeDasharray={dash} strokeDashoffset={offset} strokeLinecap="round" transform="rotate(-90 110 110)" />
-                <text x="110" y="118" textAnchor="middle" fontSize="36" fontWeight="800" fill="currentColor">{fmt(swElapsed)}</text>
+                <text x="110" y="118" textAnchor="middle" fontSize={isFs ? 44 : 36} fontWeight="800" fill="currentColor">{fmt(swElapsed)}</text>
               </svg>
               <div className="row center">
                 {!swRunning ? (
@@ -197,52 +207,67 @@ export default function FocusTimer() {
                 ) : (
                   <button className="btn secondary" onClick={swPause}>Pause</button>
                 )}
-                <button className="btn secondary" onClick={swReset}>Reset</button>
-                <button className="btn" onClick={toggleFullscreen}>{isFs ? 'Exit Fullscreen' : 'Fullscreen'}</button>
+                {!isFs && <button className="btn secondary" onClick={swReset}>Reset</button>}
+                <button className="btn" onClick={isFs ? () => document.exitFullscreen?.() : toggleFullscreen}>{isFs ? 'Exit' : 'Fullscreen'}</button>
+                {isFs && <button className="btn danger" onClick={stopStopwatch}>Stop</button>}
               </div>
-              <div className="row between">
-                <span className="small">Stopwatch</span>
-                <span className="small">Counts focus stats while running</span>
-              </div>
+              {!isFs && (
+                <div className="row between">
+                  <span className="small">Stopwatch</span>
+                  <span className="small">Counts focus stats while running</span>
+                </div>
+              )}
             </div>
           )}
 
-          <div className="grid">
-            <div className="panel">
-              <h4 className="panel-title">Settings</h4>
-              <div className="section">
-                <div className="row wrap">
-                  <button className="btn secondary" onClick={() => setSettings({ ...settings, focusMin: 25, shortBreakMin: 5, longBreakMin: 15 })}>25/5/15</button>
-                  <button className="btn secondary" onClick={() => setSettings({ ...settings, focusMin: 50, shortBreakMin: 10, longBreakMin: 20 })}>50/10/20</button>
-                  <button className="btn secondary" onClick={() => setSettings({ ...settings, focusMin: 90, shortBreakMin: 10, longBreakMin: 30 })}>90/10/30</button>
+          {!isFs && (
+            <div className="grid">
+              <div className="panel">
+                <h4 className="panel-title">Settings</h4>
+                <div className="settings-table">
+                  <div className="row wrap" style={{ marginBottom: 8 }}>
+                    <button className="btn secondary" onClick={() => setSettings({ ...settings, focusMin: 25, shortBreakMin: 5, longBreakMin: 15 })}>25/5/15</button>
+                    <button className="btn secondary" onClick={() => setSettings({ ...settings, focusMin: 50, shortBreakMin: 10, longBreakMin: 20 })}>50/10/20</button>
+                    <button className="btn secondary" onClick={() => setSettings({ ...settings, focusMin: 90, shortBreakMin: 10, longBreakMin: 30 })}>90/10/30</button>
+                  </div>
+                  <div className="settings-row">
+                    <div className="settings-label">Focus minutes</div>
+                    <div className="settings-control"><input className="input" type="number" min="1" max="180" value={settings.focusMin} onChange={(e) => setSettings({ ...settings, focusMin: Number(e.target.value) })} /></div>
+                  </div>
+                  <div className="settings-row">
+                    <div className="settings-label">Short break minutes</div>
+                    <div className="settings-control"><input className="input" type="number" min="1" max="60" value={settings.shortBreakMin} onChange={(e) => setSettings({ ...settings, shortBreakMin: Number(e.target.value) })} /></div>
+                  </div>
+                  <div className="settings-row">
+                    <div className="settings-label">Long break minutes</div>
+                    <div className="settings-control"><input className="input" type="number" min="1" max="60" value={settings.longBreakMin} onChange={(e) => setSettings({ ...settings, longBreakMin: Number(e.target.value) })} /></div>
+                  </div>
+                  <div className="settings-row">
+                    <div className="settings-label">Rounds until long break</div>
+                    <div className="settings-control"><input className="input" type="number" min="1" max="10" value={settings.roundsUntilLong} onChange={(e) => setSettings({ ...settings, roundsUntilLong: Number(e.target.value) })} /></div>
+                  </div>
+                  <div className="settings-row">
+                    <div className="settings-label">Auto-start breaks</div>
+                    <div className="settings-control">
+                      <label className="switch">
+                        <input type="checkbox" checked={settings.autoStartBreaks} onChange={(e) => setSettings({ ...settings, autoStartBreaks: e.target.checked })} />
+                        <span className="slider" />
+                      </label>
+                    </div>
+                  </div>
+                  <div className="settings-row">
+                    <div className="settings-label">Auto-start focus</div>
+                    <div className="settings-control">
+                      <label className="switch">
+                        <input type="checkbox" checked={settings.autoStartFocus} onChange={(e) => setSettings({ ...settings, autoStartFocus: e.target.checked })} />
+                        <span className="slider" />
+                      </label>
+                    </div>
+                  </div>
                 </div>
-                <label>
-                  <div className="small">Focus minutes</div>
-                  <input className="input" type="number" min="1" max="180" value={settings.focusMin} onChange={(e) => setSettings({ ...settings, focusMin: Number(e.target.value) })} />
-                </label>
-                <label>
-                  <div className="small">Short break minutes</div>
-                  <input className="input" type="number" min="1" max="60" value={settings.shortBreakMin} onChange={(e) => setSettings({ ...settings, shortBreakMin: Number(e.target.value) })} />
-                </label>
-                <label>
-                  <div className="small">Long break minutes</div>
-                  <input className="input" type="number" min="1" max="60" value={settings.longBreakMin} onChange={(e) => setSettings({ ...settings, longBreakMin: Number(e.target.value) })} />
-                </label>
-                <label>
-                  <div className="small">Rounds until long break</div>
-                  <input className="input" type="number" min="1" max="10" value={settings.roundsUntilLong} onChange={(e) => setSettings({ ...settings, roundsUntilLong: Number(e.target.value) })} />
-                </label>
-                <label className="row" style={{ justifyContent: 'space-between' }}>
-                  <span>Auto-start breaks</span>
-                  <input type="checkbox" checked={settings.autoStartBreaks} onChange={(e) => setSettings({ ...settings, autoStartBreaks: e.target.checked })} />
-                </label>
-                <label className="row" style={{ justifyContent: 'space-between' }}>
-                  <span>Auto-start focus</span>
-                  <input type="checkbox" checked={settings.autoStartFocus} onChange={(e) => setSettings({ ...settings, autoStartFocus: e.target.checked })} />
-                </label>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
