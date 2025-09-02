@@ -68,15 +68,6 @@ export default function Home({ goTo }) {
       </div>
 
       <div className="home-grid">
-        <div className="panel compact">
-          <h3 className="panel-title">Jump back in</h3>
-          <div className="quick-actions">
-            <button className="btn teal" onClick={() => goTo('focus')}>Focus</button>
-            <button className="btn amber" onClick={() => goTo('tasks')}>Tasks</button>
-            <button className="btn purple" onClick={() => goTo('notes')}>Notes</button>
-            <button className="btn rose" onClick={() => goTo('planner')}>Planner</button>
-          </div>
-        </div>
         <div className="panel">
           <h3 className="panel-title">Upcoming</h3>
           <p className="small">Tomorrow has {plannedTomorrow} planned block{plannedTomorrow === 1 ? '' : 's'}.</p>
