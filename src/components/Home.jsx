@@ -2,7 +2,10 @@ import React from 'react';
 import { load } from '../lib/storage.js';
 
 function dateKey(d = new Date()) {
-  return d.toISOString().slice(0, 10);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }
 
 function fmtDuration(seconds = 0) {
