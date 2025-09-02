@@ -3,6 +3,7 @@ import { useInterval } from '../lib/hooks.js';
 import { usePersistentState } from '../lib/hooks.js';
 import { load, save } from '../lib/storage.js';
 import { playStart, playPause, playStop, playSessionEnd } from '../lib/sound.js';
+import { load as loadLS } from '../lib/storage.js';
 
 function fmt(sec) {
   const m = Math.floor(sec / 60).toString().padStart(2, '0');
