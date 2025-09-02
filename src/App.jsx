@@ -21,14 +21,13 @@ export default function App() {
   return (
     <div className="app-shell">
       <header className="header-bar">
-        <div className="brand-title">FocusFlow</div>
+        <div className="brand-title"><span className="brand-logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="var(--primary)"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs><path d="M12 3c4.97 0 9 4.03 9 9s-4.03 9-9 9S3 16.97 3 12 7.03 3 12 3z" fill="url(#g)" opacity="0.2"/><path d="M6 12c2.5-2.2 5.5-2.2 8 0 2.5 2.2 5.5 2.2 8 0" stroke="url(#g)" stroke-width="2" stroke-linecap="round"/></svg></span> FocusFlow</div>
         <nav className="nav-tabs">
           {tabs.map(t => (
             <button key={t.key} className={`tab-btn ${tab === t.key ? 'active' : ''}`} onClick={() => selectTab(t.key)}>{t.label}</button>
           ))}
         </nav>
         <div className="toolbar">
-          <div className="chip now-chip" aria-label="Current date and time">{new Date().toLocaleString()}</div>
           <ThemeToggle />
         </div>
       </header>
