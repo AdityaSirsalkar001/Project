@@ -83,6 +83,14 @@ html[data-theme="dark"] .planner-cell:focus { background: rgba(96,165,250,.10); 
 .row.between { justify-content: space-between; }
 .row.center { justify-content: center; }
 
+/* Tasks filters */
+.filters-row { flex-wrap: nowrap; overflow-x: auto; }
+.filters-row .input, .filters-row .select { width: auto; }
+.task-add-input { flex: 1 1 280px; }
+.status-filter { width: 120px; }
+.project-filter { width: 140px; }
+.tags-filter { width: 180px; }
+
 .btn { background: var(--primary); color: var(--primary-contrast); border: 1px solid var(--primary); padding: 10px 14px; border-radius: 12px; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease; }
 .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(37,99,235,.25); }
 .btn:active { transform: translateY(0); }
