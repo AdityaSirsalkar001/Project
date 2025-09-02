@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useInterval } from '../lib/hooks.js';
 import { usePersistentState } from '../lib/hooks.js';
 import { load, save } from '../lib/storage.js';
@@ -41,32 +41,62 @@ export default function FocusTimer() {
     focusMin: 25,
     shortBreakMin: 5,
     longBreakMin: 15,
-    roundsUntilLong: 4
+    roundsUntilLong: 4,
+    autoStartBreaks: false,
+    autoStartFocus: true
   });
-  const [mode, setMode] = usePersistentState('timer:mode', 'focus');
+
+  const [modeType, setModeType] = usePersistentState('timer:type', 'timer'); // 'timer' | 'stopwatch'
+
+  // Timer state
+  const [mode, setMode] = usePersistentState('timer:mode', 'focus'); // 'focus' | 'short' | 'long'
   const [round, setRound] = usePersistentState('timer:round', 1);
   const [remaining, setRemaining] = usePersistentState('timer:remaining', 25 * 60);
   const [running, setRunning] = usePersistentState('timer:running', false);
+
+  // Stopwatch state
+  const [swElapsed, setSwElapsed] = usePersistentState('stopwatch:elapsed', 0);
+  const [swRunning, setSwRunning] = usePersistentState('stopwatch:running', false);
+  const [swActive, setSwActive] = usePersistentState('stopwatch:active', false); // counts a session when stopping
+
+  // Fullscreen state
+  const wrapRef = useRef(null);
+  const [isFs, setIsFs] = useState(false);
+  useEffect(() => {
+    const onFs = () => setIsFs(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', onFs);
+    return () => document.removeEventListener('fullscreenchange', onFs);
+  }, []);
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      wrapRef.current?.requestFullscreen?.();
+    } else {
+      document.exitFullscreen?.();
+    }
+  }
 
   // derive total based on mode
   const total = useMemo(() => (
     mode === 'focus' ? settings.focusMin * 60 : mode === 'short' ? settings.shortBreakMin * 60 : settings.longBreakMin * 60
   ), [mode, settings.focusMin, settings.shortBreakMin, settings.longBreakMin]);
 
-  // ensure remaining aligns when mode or settings change
-  useEffect(() => {
-    setRemaining(total);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [total, mode]);
+  // keep remaining synced to total
+  useEffect(() => { if (modeType === 'timer') setRemaining(total); }, [total, modeType]);
 
   useInterval(() => {
-    if (!running) return;
+    if (modeType !== 'timer' || !running) return;
     if (mode === 'focus') incTodaySeconds(1);
     setRemaining((r) => {
       if (r > 1) return r - 1;
       handleComplete();
       return 0;
     });
+  }, 1000);
+
+  useInterval(() => {
+    if (modeType !== 'stopwatch' || !swRunning) return;
+    setSwElapsed((v) => v + 1);
+    incTodaySeconds(1);
   }, 1000);
 
   function handleComplete() {
@@ -76,12 +106,15 @@ export default function FocusTimer() {
       if (round >= settings.roundsUntilLong) {
         setMode('long');
         setRound(1);
+        if (settings.autoStartBreaks) setRunning(true);
       } else {
         setMode('short');
         setRound(round + 1);
+        if (settings.autoStartBreaks) setRunning(true);
       }
     } else {
       setMode('focus');
+      if (settings.autoStartFocus) setRunning(true);
     }
   }
 
@@ -93,80 +126,121 @@ export default function FocusTimer() {
     setRunning(false);
     setMode(next);
     if (next === 'focus') setRound(1);
-    setRemaining(
-      next === 'focus' ? settings.focusMin * 60 : next === 'short' ? settings.shortBreakMin * 60 : settings.longBreakMin * 60
-    );
+    setRemaining(next === 'focus' ? settings.focusMin * 60 : next === 'short' ? settings.shortBreakMin * 60 : settings.longBreakMin * 60);
   }
+
+  // Stopwatch controls
+  function swStart() { setSwRunning(true); setSwActive(true); }
+  function swPause() {
+    setSwRunning(false);
+    if (swElapsed > 0 && swActive) { incTodaySessions(); setSwActive(false); }
+  }
+  function swReset() { setSwRunning(false); setSwElapsed(0); setSwActive(false); }
 
   const title = useMemo(() => mode === 'focus' ? 'Focus' : mode === 'short' ? 'Short Break' : 'Long Break', [mode]);
 
-  const radius = 80;
-  const circumference = 2 * Math.PI * radius;
-  const progress = Math.max(0, Math.min(1, remaining / total));
-  const dash = circumference;
-  const offset = dash * (1 - progress);
+  // ring
+  const radius = 90; const circumference = 2 * Math.PI * radius;
+  const progress = modeType === 'timer' ? Math.max(0, Math.min(1, remaining / total)) : 1 - ((swElapsed % 60) / 60);
+  const dash = circumference; const offset = dash * (1 - progress);
 
   return (
-    <div className="panel">
-      <h3 className="panel-title">Focus</h3>
-      <div className="section">
-        <div className="mode-tabs row center">
-          <button className={`mode-btn ${mode === 'focus' ? 'active' : ''}`} onClick={() => switchMode('focus')} aria-pressed={mode === 'focus'}>Focus</button>
-          <button className={`mode-btn ${mode === 'short' ? 'active' : ''}`} onClick={() => switchMode('short')} aria-pressed={mode === 'short'}>Short</button>
-          <button className={`mode-btn ${mode === 'long' ? 'active' : ''}`} onClick={() => switchMode('long')} aria-pressed={mode === 'long'}>Long</button>
-        </div>
-
-        <div className="timer-wrap">
-          <svg className="timer-ring" viewBox="0 0 200 200" width="200" height="200" aria-label={`${title} timer`}>
-            <circle cx="100" cy="100" r={radius} stroke="var(--border)" strokeWidth="14" fill="none" />
-            <circle
-              cx="100"
-              cy="100"
-              r={radius}
-              stroke="var(--primary)"
-              strokeWidth="14"
-              fill="none"
-              strokeDasharray={dash}
-              strokeDashoffset={offset}
-              strokeLinecap="round"
-              transform="rotate(-90 100 100)"
-            />
-            <text x="100" y="108" textAnchor="middle" fontSize="32" fontWeight="800" fill="currentColor">{fmt(remaining)}</text>
-          </svg>
-          <div className="row center">
-            {!running ? (
-              <button className="btn success" onClick={start}>Start</button>
-            ) : (
-              <button className="btn secondary" onClick={pause}>Pause</button>
-            )}
-            <button className="btn secondary" onClick={reset}>Reset</button>
+    <div ref={wrapRef} className={isFs ? 'focus-fullscreen' : ''}>
+      <div className="panel">
+        <h3 className="panel-title">Focus</h3>
+        <div className="section">
+          <div className="row center" style={{ gap: 8 }}>
+            <button className={`mode-btn ${modeType === 'timer' ? 'active' : ''}`} onClick={() => setModeType('timer')}>Timer</button>
+            <button className={`mode-btn ${modeType === 'stopwatch' ? 'active' : ''}`} onClick={() => setModeType('stopwatch')}>Stopwatch</button>
           </div>
-          <div className="row between">
-            <span className="small">{title}</span>
-            <span className="small">Round {round} / {settings.roundsUntilLong}</span>
-          </div>
-        </div>
 
-        <div className="grid">
-          <div className="panel">
-            <h4 className="panel-title">Settings</h4>
-            <div className="section">
-              <label>
-                <div className="small">Focus minutes</div>
-                <input className="input" type="number" min="1" max="180" value={settings.focusMin} onChange={(e) => setSettings({ ...settings, focusMin: Number(e.target.value) })} />
-              </label>
-              <label>
-                <div className="small">Short break minutes</div>
-                <input className="input" type="number" min="1" max="60" value={settings.shortBreakMin} onChange={(e) => setSettings({ ...settings, shortBreakMin: Number(e.target.value) })} />
-              </label>
-              <label>
-                <div className="small">Long break minutes</div>
-                <input className="input" type="number" min="1" max="60" value={settings.longBreakMin} onChange={(e) => setSettings({ ...settings, longBreakMin: Number(e.target.value) })} />
-              </label>
-              <label>
-                <div className="small">Rounds until long break</div>
-                <input className="input" type="number" min="1" max="10" value={settings.roundsUntilLong} onChange={(e) => setSettings({ ...settings, roundsUntilLong: Number(e.target.value) })} />
-              </label>
+          {modeType === 'timer' && (
+            <>
+              <div className="row center" style={{ gap: 6 }}>
+                <button className={`mode-btn ${mode === 'focus' ? 'active' : ''}`} onClick={() => switchMode('focus')} aria-pressed={mode === 'focus'}>Focus</button>
+                <button className={`mode-btn ${mode === 'short' ? 'active' : ''}`} onClick={() => switchMode('short')} aria-pressed={mode === 'short'}>Short</button>
+                <button className={`mode-btn ${mode === 'long' ? 'active' : ''}`} onClick={() => switchMode('long')} aria-pressed={mode === 'long'}>Long</button>
+              </div>
+              <div className="timer-wrap">
+                <svg className="timer-ring" viewBox="0 0 220 220" width="240" height="240" aria-label={`${title} timer`}>
+                  <circle cx="110" cy="110" r={radius} stroke="var(--border)" strokeWidth="14" fill="none" />
+                  <circle cx="110" cy="110" r={radius} stroke="var(--primary)" strokeWidth="14" fill="none" strokeDasharray={dash} strokeDashoffset={offset} strokeLinecap="round" transform="rotate(-90 110 110)" />
+                  <text x="110" y="118" textAnchor="middle" fontSize="36" fontWeight="800" fill="currentColor">{fmt(remaining)}</text>
+                </svg>
+                <div className="row center">
+                  {!running ? (
+                    <button className="btn success" onClick={start}>Start</button>
+                  ) : (
+                    <button className="btn secondary" onClick={pause}>Pause</button>
+                  )}
+                  <button className="btn secondary" onClick={reset}>Reset</button>
+                  <button className="btn" onClick={toggleFullscreen}>{isFs ? 'Exit Fullscreen' : 'Fullscreen'}</button>
+                </div>
+                <div className="row between">
+                  <span className="small">{title}</span>
+                  <span className="small">Round {round} / {settings.roundsUntilLong}</span>
+                </div>
+              </div>
+            </>
+          )}
+
+          {modeType === 'stopwatch' && (
+            <div className="timer-wrap">
+              <svg className="timer-ring" viewBox="0 0 220 220" width="240" height="240" aria-label={`Stopwatch`}>
+                <circle cx="110" cy="110" r={radius} stroke="var(--border)" strokeWidth="14" fill="none" />
+                <circle cx="110" cy="110" r={radius} stroke="var(--primary)" strokeWidth="14" fill="none" strokeDasharray={dash} strokeDashoffset={offset} strokeLinecap="round" transform="rotate(-90 110 110)" />
+                <text x="110" y="118" textAnchor="middle" fontSize="36" fontWeight="800" fill="currentColor">{fmt(swElapsed)}</text>
+              </svg>
+              <div className="row center">
+                {!swRunning ? (
+                  <button className="btn success" onClick={swStart}>Start</button>
+                ) : (
+                  <button className="btn secondary" onClick={swPause}>Pause</button>
+                )}
+                <button className="btn secondary" onClick={swReset}>Reset</button>
+                <button className="btn" onClick={toggleFullscreen}>{isFs ? 'Exit Fullscreen' : 'Fullscreen'}</button>
+              </div>
+              <div className="row between">
+                <span className="small">Stopwatch</span>
+                <span className="small">Counts focus stats while running</span>
+              </div>
+            </div>
+          )}
+
+          <div className="grid">
+            <div className="panel">
+              <h4 className="panel-title">Settings</h4>
+              <div className="section">
+                <div className="row wrap">
+                  <button className="btn secondary" onClick={() => setSettings({ ...settings, focusMin: 25, shortBreakMin: 5, longBreakMin: 15 })}>25/5/15</button>
+                  <button className="btn secondary" onClick={() => setSettings({ ...settings, focusMin: 50, shortBreakMin: 10, longBreakMin: 20 })}>50/10/20</button>
+                  <button className="btn secondary" onClick={() => setSettings({ ...settings, focusMin: 90, shortBreakMin: 10, longBreakMin: 30 })}>90/10/30</button>
+                </div>
+                <label>
+                  <div className="small">Focus minutes</div>
+                  <input className="input" type="number" min="1" max="180" value={settings.focusMin} onChange={(e) => setSettings({ ...settings, focusMin: Number(e.target.value) })} />
+                </label>
+                <label>
+                  <div className="small">Short break minutes</div>
+                  <input className="input" type="number" min="1" max="60" value={settings.shortBreakMin} onChange={(e) => setSettings({ ...settings, shortBreakMin: Number(e.target.value) })} />
+                </label>
+                <label>
+                  <div className="small">Long break minutes</div>
+                  <input className="input" type="number" min="1" max="60" value={settings.longBreakMin} onChange={(e) => setSettings({ ...settings, longBreakMin: Number(e.target.value) })} />
+                </label>
+                <label>
+                  <div className="small">Rounds until long break</div>
+                  <input className="input" type="number" min="1" max="10" value={settings.roundsUntilLong} onChange={(e) => setSettings({ ...settings, roundsUntilLong: Number(e.target.value) })} />
+                </label>
+                <label className="row" style={{ justifyContent: 'space-between' }}>
+                  <span>Auto-start breaks</span>
+                  <input type="checkbox" checked={settings.autoStartBreaks} onChange={(e) => setSettings({ ...settings, autoStartBreaks: e.target.checked })} />
+                </label>
+                <label className="row" style={{ justifyContent: 'space-between' }}>
+                  <span>Auto-start focus</span>
+                  <input type="checkbox" checked={settings.autoStartFocus} onChange={(e) => setSettings({ ...settings, autoStartFocus: e.target.checked })} />
+                </label>
+              </div>
             </div>
           </div>
         </div>
