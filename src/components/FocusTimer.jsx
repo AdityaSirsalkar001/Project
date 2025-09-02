@@ -101,7 +101,7 @@ export default function FocusTimer() {
     incTodaySeconds(1);
   }, 1000);
 
-  function handleComplete() { playSessionEnd();
+  function handleComplete() { if (loadLS('settings:sound', true)) playSessionEnd();
     setRunning(false);
     if (mode === 'focus') {
       incTodaySessions();
@@ -121,7 +121,7 @@ export default function FocusTimer() {
   }
 
   function start() { setRunning(true); if (loadLS('settings:sound', true)) playStart(); }
-  function pause() { setRunning(false); playPause(); }
+  function pause() { setRunning(false); if (loadLS('settings:sound', true)) playPause(); }
   function reset() { setRunning(false); setRemaining(total); }
 
   function switchMode(next) {
@@ -146,8 +146,8 @@ export default function FocusTimer() {
   const progress = modeType === 'timer' ? Math.max(0, Math.min(1, remaining / total)) : 1 - ((swElapsed % 60) / 60);
   const dash = circumference; const offset = dash * (1 - progress);
 
-  function stopTimer() { setRunning(false); setRemaining(total); playStop(); }
-  function stopStopwatch() { if (swElapsed > 0 && swActive) { incTodaySessions(); } setSwRunning(false); setSwElapsed(0); setSwActive(false); playStop(); }
+  function stopTimer() { setRunning(false); setRemaining(total); if (loadLS('settings:sound', true)) playStop(); }
+  function stopStopwatch() { if (swElapsed > 0 && swActive) { incTodaySessions(); } setSwRunning(false); setSwElapsed(0); setSwActive(false); if (loadLS('settings:sound', true)) playStop(); }
 
   return (
     <div ref={wrapRef} className={isFs ? 'focus-fullscreen' : ''}>
