@@ -1,11 +1,36 @@
 import React, { useEffect, useMemo } from 'react';
 import { useInterval } from '../lib/hooks.js';
 import { usePersistentState } from '../lib/hooks.js';
+import { load, save } from '../lib/storage.js';
 
 function fmt(sec) {
   const m = Math.floor(sec / 60).toString().padStart(2, '0');
   const s = Math.floor(sec % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
+}
+
+function dateKey(d = new Date()) {
+  return d.toISOString().slice(0, 10);
+}
+
+function incTodaySeconds(delta = 1) {
+  const key = 'stats:focus';
+  const stats = load(key, {});
+  const k = dateKey();
+  const cur = stats[k] || { seconds: 0, sessions: 0 };
+  cur.seconds += delta;
+  stats[k] = cur;
+  save(key, stats);
+}
+
+function incTodaySessions() {
+  const key = 'stats:focus';
+  const stats = load(key, {});
+  const k = dateKey();
+  const cur = stats[k] || { seconds: 0, sessions: 0 };
+  cur.sessions += 1;
+  stats[k] = cur;
+  save(key, stats);
 }
 
 export default function FocusTimer() {
@@ -29,6 +54,7 @@ export default function FocusTimer() {
 
   useInterval(() => {
     if (!running) return;
+    if (mode === 'focus') incTodaySeconds(1);
     setRemaining((r) => {
       if (r > 1) return r - 1;
       handleComplete();
@@ -39,6 +65,7 @@ export default function FocusTimer() {
   function handleComplete() {
     setRunning(false);
     if (mode === 'focus') {
+      incTodaySessions();
       if (round >= settings.roundsUntilLong) {
         setMode('long');
         setRound(1);
