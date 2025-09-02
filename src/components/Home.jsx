@@ -49,19 +49,19 @@ export default function Home({ goTo }) {
       </div>
 
       <div className="stats-grid">
-        <div className="stat-card">
+        <div className="stat-card teal">
           <div className="stat-value">{fmtDuration(todayStats.seconds)}</div>
           <div className="stat-label">Focus time today</div>
         </div>
-        <div className="stat-card">
+        <div className="stat-card amber">
           <div className="stat-value">{todayStats.sessions}</div>
           <div className="stat-label">Focus sessions today</div>
         </div>
-        <div className="stat-card">
+        <div className="stat-card purple">
           <div className="stat-value">{active}</div>
           <div className="stat-label">Active tasks</div>
         </div>
-        <div className="stat-card">
+        <div className="stat-card rose">
           <div className="stat-value">{completed}</div>
           <div className="stat-label">Completed</div>
         </div>
