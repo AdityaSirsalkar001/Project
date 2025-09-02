@@ -131,7 +131,15 @@ html[data-theme="dark"] .planner-cell:focus { background: rgba(96,165,250,.10); 
 .stat-label { color: var(--muted); font-size: 12px; }
 
 .home-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-@media (min-width: 900px) { .home-grid { grid-template-columns: 2fr 1fr; } }
+@media (min-width: 900px) { .home-grid { grid-template-columns: 1fr; } }
+
+/* Heatmap */
+.heatmap { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; }
+.cell { width: 36px; height: 36px; border-radius: 8px; background: var(--border); }
+.cell.lvl1 { background: rgba(20,184,166,.35); }
+.cell.lvl2 { background: rgba(124,58,237,.35); }
+.cell.lvl3 { background: rgba(245,158,11,.45); }
+.cell.lvl4 { background: rgba(244,63,94,.6); }
 
 /* Utilities */
 .timer-display { font-size: 48px; text-align: center; font-weight: 800; }
