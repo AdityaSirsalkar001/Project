@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../lib/AuthProvider.jsx';
 
 export default function AuthForm() {
-  const { signIn, signUp, signInWithGoogle, mode } = useAuth();
+  const { signIn, signUp, signInWithGoogle } = useAuth();
   const [mode, setMode] = useState('signin'); // signin | signup
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
