@@ -151,6 +151,14 @@ html[data-theme="dark"] .planner-cell:focus { background: rgba(96,165,250,.10); 
 
 .btn, .input, .select, .textarea, .tab-btn, .mode-btn, .brand-title, .brand-logo svg, .brand-logo path { transition: background-color .25s ease, color .25s ease, border-color .25s ease, fill .25s ease, stroke .25s ease, box-shadow .25s ease; }
 
+/* Command palette */
+.palette-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.35); display: grid; place-items: start center; padding-top: 10vh; z-index: 60; }
+.palette { width: min(720px, 92vw); background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 12px; box-shadow: 0 20px 60px rgba(0,0,0,.25); }
+.palette-list { max-height: 50vh; overflow: auto; display: grid; gap: 6px; margin-top: 8px; }
+.palette-item { text-align: left; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel); cursor: pointer; }
+.palette-item:hover { background: rgba(0,0,0,.04); }
+html[data-theme="dark"] .palette-item:hover { background: rgba(255,255,255,.06); }
+
 /* Focus */
 .timer-wrap { display: grid; gap: 12px; justify-items: center; }
 .timer-ring { filter: drop-shadow(0 10px 24px rgba(37,99,235,.2)); }
