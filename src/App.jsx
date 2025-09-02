@@ -37,16 +37,18 @@ export default function App() {
       </header>
 
       <main className="section">
-        {tab === 'home' && <Home goTo={selectTab} />}
-        {tab === 'focus' && (
-          <div className="grid">
-            <FocusTimer />
-            <TodoList />
-          </div>
-        )}
-        {tab === 'tasks' && <TodoList />}
-        {tab === 'notes' && <Notes />}
-        {tab === 'planner' && <DayPlanner />}
+        <div key={tab} className="page-animate">
+          {tab === 'home' && <Home goTo={selectTab} />}
+          {tab === 'focus' && (
+            <div className="grid">
+              <FocusTimer />
+              <TodoList />
+            </div>
+          )}
+          {tab === 'tasks' && <TodoList />}
+          {tab === 'notes' && <Notes />}
+          {tab === 'planner' && <DayPlanner />}
+        </div>
       </main>
     </div>
   );
