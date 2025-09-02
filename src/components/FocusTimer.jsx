@@ -151,7 +151,7 @@ export default function FocusTimer() {
 
   return (
     <div ref={wrapRef} className={isFs ? 'focus-fullscreen' : ''}>
-      <div className="panel">
+      <div className="panel focus-accent">
         <h3 className="panel-title">Focus</h3>
         <div className="section">
           {!isFs && (
