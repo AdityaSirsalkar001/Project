@@ -16,6 +16,7 @@ export default function TodoList() {
   const [filter, setFilter] = useState('all');
   const [project, setProject] = usePersistentState('todos:project', 'all');
   const [tagsFilter, setTagsFilter] = useState('');
+  const [planner, setPlanner] = usePersistentState('planner', {});
 
   const [celebrate, setCelebrate] = useState(false);
   const [pulseId, setPulseId] = useState(null);
@@ -44,7 +45,7 @@ export default function TodoList() {
   function toggle(id) {
     const target = items.find(i => i.id === id);
     const willBeDone = target ? !target.done : false;
-    setItems(items.map(i => {
+    const nextItems = items.map(i => {
       if (i.id !== id) return i;
       const done = !i.done;
       const updated = { ...i, done, updatedAt: Date.now() };
@@ -53,17 +54,72 @@ export default function TodoList() {
         return [updated, next];
       }
       return updated;
-    }).flat());
+    }).flat();
+    setItems(nextItems);
+
+    // reflect into planner slots linked to this todo id
+    const newPlanner = { ...planner };
+    Object.keys(newPlanner).forEach(dayKey => {
+      const day = newPlanner[dayKey] || {};
+      let changed = false;
+      Object.keys(day).forEach(h => {
+        const v = day[h];
+        if (v && typeof v === 'object' && v.todoId === id) {
+          day[h] = { ...v, done: willBeDone };
+          changed = true;
+        }
+      });
+      if (changed) newPlanner[dayKey] = { ...day };
+    });
+    setPlanner(newPlanner);
+
     if (willBeDone) {
       setPulseId(id);
       triggerCelebrate();
       setTimeout(() => setPulseId(null), 800);
     }
   }
-  function remove(id) { setItems(items.filter(i => i.id !== id)); }
+  function remove(id) {
+    setItems(items.filter(i => i.id !== id));
+    const newPlanner = { ...planner };
+    let touched = false;
+    Object.keys(newPlanner).forEach(dayKey => {
+      const day = { ...(newPlanner[dayKey] || {}) };
+      let changed = false;
+      Object.keys(day).forEach(h => {
+        const v = day[h];
+        if (v && typeof v === 'object' && v.todoId === id) {
+          // remove from planner entirely
+          delete day[h];
+          changed = true; touched = true;
+        }
+      });
+      if (changed) newPlanner[dayKey] = day;
+    });
+    if (touched) setPlanner(newPlanner);
+  }
   function edit(id, value) { setItems(items.map(i => i.id === id ? { ...i, text: value, updatedAt: Date.now() } : i)); }
   function setItem(id, patch) { setItems(items.map(i => i.id === id ? { ...i, ...patch, updatedAt: Date.now() } : i)); }
-  function clearCompleted() { setItems(items.filter(i => !i.done)); }
+  function clearCompleted() {
+    const toRemove = new Set(items.filter(i => i.done).map(i => i.id));
+    setItems(items.filter(i => !i.done));
+    if (toRemove.size === 0) return;
+    const newPlanner = { ...planner };
+    let touched = false;
+    Object.keys(newPlanner).forEach(dayKey => {
+      const day = { ...(newPlanner[dayKey] || {}) };
+      let changed = false;
+      Object.keys(day).forEach(h => {
+        const v = day[h];
+        if (v && typeof v === 'object' && v.todoId && toRemove.has(v.todoId)) {
+          delete day[h];
+          changed = true; touched = true;
+        }
+      });
+      if (changed) newPlanner[dayKey] = day;
+    });
+    if (touched) setPlanner(newPlanner);
+  }
 
   const projects = useMemo(() => ['all', 'General', ...Array.from(new Set(items.map(i => i.project).filter(Boolean)))], [items]);
 
@@ -112,7 +168,7 @@ export default function TodoList() {
         {shown.map(item => (
           <li key={item.id} className={`list-item ${item.done ? 'task-done' : 'task-active'} ${pulseId === item.id ? 'task-complete-pulse' : ''}`}>
             <div className="item-left item-left-expand">
-              <input type="checkbox" checked={item.done} onChange={() => toggle(item.id)} />
+              <input className="task-checkbox" type="checkbox" checked={item.done} onChange={() => toggle(item.id)} />
               <input className="input" value={item.text} onChange={e => edit(item.id, e.target.value)} />
             </div>
             <div className="item-actions">

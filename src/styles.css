@@ -81,10 +81,38 @@ html[data-theme="dark"] body[data-accent="purple"] .tab-btn.active { background:
 .planner-grid::before { content: ""; position: absolute; inset: 0; background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 47px, rgba(0,0,0,.06) 48px, rgba(0,0,0,.06) 49px); opacity: .14; pointer-events: none; }
 html[data-theme="dark"] .planner-grid::before { opacity: .22; }
 .planner-time { font-variant-numeric: tabular-nums; }
-.planner-cell { border: 0; background: transparent; outline: none; box-shadow: none; transition: background-color .2s ease, box-shadow .2s ease; }
+
+/* Multi-day matrix */
+.planner-matrix-wrapper { overflow: auto; }
+.planner-matrix { display: grid; gap: 10px; }
+.planner-matrix-header, .planner-matrix-row { display: grid; gap: 10px; align-items: start; grid-template-columns: 90px 1fr; }
+.planner-matrix.days-3 .planner-matrix-header, .planner-matrix.days-3 .planner-matrix-row { grid-template-columns: 90px repeat(3, 1fr); }
+.planner-matrix.days-5 .planner-matrix-header, .planner-matrix.days-5 .planner-matrix-row { grid-template-columns: 90px repeat(5, 1fr); }
+.planner-matrix.days-7 .planner-matrix-header, .planner-matrix.days-7 .planner-matrix-row { grid-template-columns: 90px repeat(7, 1fr); }
+.planner-day-label { text-align: center; font-weight: 700; border: 1px solid var(--border); border-radius: 10px; padding: 6px; background: var(--panel); box-shadow: 0 1px 0 rgba(0,0,0,.06); }
+html[data-theme="dark"] .planner-day-label { box-shadow: 0 1px 0 rgba(255,255,255,.03), inset 0 0 0 1px var(--border); }
+.planner-time { text-align: right; padding-right: 10px; color: var(--muted); }
+
+.planner-slot { display: flex; align-items: flex-start; gap: 8px; position: relative; }
+.task-checkbox { width: 18px; height: 18px; accent-color: var(--accent-teal); }
+.planner-checkbox { width: 18px; height: 18px; margin-top: 8px; accent-color: var(--muted); }
+.planner-slot.has-task .planner-checkbox { accent-color: var(--success); }
+.planner-cell { border: 1px dashed var(--border); border-radius: 10px; padding: 8px; min-height: 48px; background: transparent; color: var(--text); outline: none; box-shadow: none; transition: background-color .2s ease, box-shadow .2s ease; width: 100%; }
+.planner-slot:hover .planner-cell { background: rgba(37,99,235,.06); }
 .planner-cell:focus { background: rgba(37,99,235,.08); box-shadow: inset 0 0 0 2px var(--primary); }
-html[data-theme="dark"] .planner-cell:focus { background: rgba(96,165,250,.10); }
+.slot-editing .planner-cell { box-shadow: inset 0 0 0 2px var(--primary); }
+html[data-theme="dark"] .planner-cell { background: rgba(255,255,255,.02); }
+html[data-theme="dark"] .planner-slot:hover .planner-cell { background: rgba(147,197,253,.08); }
+html[data-theme="dark"] .planner-cell:focus { background: rgba(147,197,253,.12); }
+.planner-add-btn { align-self: flex-start; }
+.planner-del-btn { align-self: flex-start; }
+.btn.small { padding: 6px 10px; border-radius: 10px; font-size: 12px; }
+.planner-done .planner-cell { background: color-mix(in oklab, var(--success) 12%, transparent); border-color: color-mix(in oklab, var(--success) 30%, var(--border)); text-decoration: line-through; opacity: .8; }
+html[data-theme="dark"] .planner-done .planner-cell { background: color-mix(in oklab, var(--success) 18%, transparent); }
 .panel-title { margin: 0 0 12px; font-size: 16px; font-weight: 700; }
+
+/* Controls */
+.days-span-select { width: 120px; }
 
 .input, .select, .textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); background: transparent; color: var(--text); border-radius: 10px; }
 .textarea { min-height: 120px; resize: vertical; }
@@ -106,8 +134,8 @@ html[data-theme="dark"] .planner-cell:focus { background: rgba(96,165,250,.10); 
 .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(37,99,235,.25); }
 .btn:active { transform: translateY(0); }
 .btn.secondary { background: var(--panel); color: var(--text); border: 1px solid var(--border); }
-.btn.danger { background: var(--danger); border-color: var(--danger); }
-.btn.success { background: var(--success); border-color: var(--success); }
+.btn.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn.success { background: var(--success); border-color: var(--success); color: #fff; }
 .btn.purple { background: var(--accent-purple); border-color: var(--accent-purple); color: #fff; }
 .btn.teal { background: var(--accent-teal); border-color: var(--accent-teal); color: #062522; }
 .btn.rose { background: var(--accent-rose); border-color: var(--accent-rose); color: #fff; }
