@@ -106,7 +106,7 @@ export default function DayPlanner() {
                 const key = k + '|' + h;
                 const showAdd = editing === key && slot.text.trim() && !slot.todoId;
                 return (
-                  <div key={k + '-' + h} className={`planner-slot ${slot.done ? 'planner-done' : ''} ${editing === key ? 'slot-editing' : ''}`}>
+                  <div key={k + '-' + h} className={`planner-slot ${slot.done ? 'planner-done' : ''} ${slot.todoId ? 'has-task' : ''} ${editing === key ? 'slot-editing' : ''}`}>
                     <input className="planner-checkbox" type="checkbox" checked={slot.done} onChange={e => setDone(k, h, e.target.checked)} />
                     <textarea className="planner-cell" value={slot.text} onChange={e => setSlot(k, h, e.target.value)} onFocus={() => setEditing(key)} onBlur={() => setTimeout(() => { setEditing(curr => curr === key ? null : curr); }, 120)} />
                     {showAdd && (
