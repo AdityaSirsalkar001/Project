@@ -125,27 +125,37 @@ export default function DayPlanner() {
     }
   }
 
+  // Realtime for my planner
   useEffect(() => {
-    if (!useCloud) return;
-    const unsubscribe = subscribePlanner((payload) => {
+    if (!useCloud || !user?.id) return;
+    const unsub = subscribePlanner((payload) => {
       const row = payload.new || payload.old;
-      const dayKey = row?.day;
-      const hour = row?.hour;
+      const dayKey = row?.day; const hour = row?.hour;
       if (!dayKey || hour == null) return;
-      setPlanner(prev => {
-        const next = { ...prev };
-        const day = { ...(next[dayKey] || {}) };
-        if (payload.eventType === 'DELETE') {
-          delete day[hour];
-        } else {
-          day[hour] = { text: row.text || '', done: !!row.done, todoId: row.todo_id || null };
-        }
-        next[dayKey] = day;
-        return next;
+      setMyPlanner(prev => {
+        const next = { ...prev }; const day = { ...(next[dayKey] || {}) };
+        if (payload.eventType === 'DELETE') delete day[hour]; else day[hour] = { text: row.text || '', done: !!row.done, todoId: row.todo_id || null };
+        next[dayKey] = day; return next;
       });
-    });
-    return () => unsubscribe && unsubscribe();
-  }, [useCloud]);
+    }, { type: 'user', id: user.id });
+    return () => unsub && unsub();
+  }, [useCloud, user?.id]);
+
+  // Realtime for group planner
+  useEffect(() => {
+    if (!useCloud || !groupId) return;
+    const unsub = subscribePlanner((payload) => {
+      const row = payload.new || payload.old;
+      const dayKey = row?.day; const hour = row?.hour;
+      if (!dayKey || hour == null) return;
+      setGroupPlanner(prev => {
+        const next = { ...prev }; const day = { ...(next[dayKey] || {}) };
+        if (payload.eventType === 'DELETE') delete day[hour]; else day[hour] = { text: row.text || '', done: !!row.done, todoId: row.todo_id || null };
+        next[dayKey] = day; return next;
+      });
+    }, { type: 'group', id: groupId });
+    return () => unsub && unsub();
+  }, [useCloud, groupId]);
 
   return (
     <div className="panel">
