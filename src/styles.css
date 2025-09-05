@@ -85,7 +85,10 @@ html[data-theme="dark"] .planner-grid::before { opacity: .22; }
 /* Multi-day matrix */
 .planner-matrix-wrapper { overflow: auto; }
 .planner-matrix { display: grid; gap: 10px; }
-.planner-matrix-header, .planner-matrix-row { display: grid; grid-template-columns: 90px repeat(var(--days), 1fr); gap: 10px; align-items: start; }
+.planner-matrix-header, .planner-matrix-row { display: grid; gap: 10px; align-items: start; grid-template-columns: 90px 1fr; }
+.planner-matrix.days-3 .planner-matrix-header, .planner-matrix.days-3 .planner-matrix-row { grid-template-columns: 90px repeat(3, 1fr); }
+.planner-matrix.days-5 .planner-matrix-header, .planner-matrix.days-5 .planner-matrix-row { grid-template-columns: 90px repeat(5, 1fr); }
+.planner-matrix.days-7 .planner-matrix-header, .planner-matrix.days-7 .planner-matrix-row { grid-template-columns: 90px repeat(7, 1fr); }
 .planner-day-label { text-align: center; font-weight: 700; border: 1px solid var(--border); border-radius: 10px; padding: 6px; background: var(--panel); }
 .planner-time { text-align: right; padding-right: 10px; color: var(--muted); }
 
