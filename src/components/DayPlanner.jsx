@@ -74,6 +74,14 @@ export default function DayPlanner() {
     if (slot.todoId) return;
     createLinkedTodo(dayKey, hour, t, slot.done);
   }
+  function deleteLinkedTodo(dayKey, hour) {
+    const slot = slotFor(dayKey, hour);
+    if (!slot.todoId) return;
+    setTodos(todos.filter(td => td.id !== slot.todoId));
+    const day = { ...getDaySlots(dayKey) };
+    delete day[hour];
+    setPlanner({ ...planner, [dayKey]: day });
+  }
 
   return (
     <div className="panel">
@@ -105,12 +113,16 @@ export default function DayPlanner() {
                 const slot = slotFor(k, h);
                 const key = k + '|' + h;
                 const showAdd = editing === key && slot.text.trim() && !slot.todoId;
+                const showDelete = editing === key && !!slot.todoId;
                 return (
                   <div key={k + '-' + h} className={`planner-slot ${slot.done ? 'planner-done' : ''} ${slot.todoId ? 'has-task' : ''} ${editing === key ? 'slot-editing' : ''}`}>
                     <input className="planner-checkbox" type="checkbox" checked={slot.done} onChange={e => setDone(k, h, e.target.checked)} />
                     <textarea className="planner-cell" value={slot.text} onChange={e => setSlot(k, h, e.target.value)} onFocus={() => setEditing(key)} onBlur={() => setTimeout(() => { setEditing(curr => curr === key ? null : curr); }, 120)} />
                     {showAdd && (
                       <button className="btn success small planner-add-btn" onMouseDown={e => e.preventDefault()} onClick={() => addTodoFromSlot(k, h)}>Add</button>
+                    )}
+                    {showDelete && (
+                      <button className="btn danger small planner-del-btn" onMouseDown={e => e.preventDefault()} onClick={() => deleteLinkedTodo(k, h)}>Delete</button>
                     )}
                   </div>
                 );
