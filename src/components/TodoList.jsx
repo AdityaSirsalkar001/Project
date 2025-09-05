@@ -17,26 +17,48 @@ export default function TodoList() {
   const [project, setProject] = usePersistentState('todos:project', 'all');
   const [tagsFilter, setTagsFilter] = useState('');
 
+  const [celebrate, setCelebrate] = useState(false);
+  const [pulseId, setPulseId] = useState(null);
+  const [toast, setToast] = useState(false);
+
   function addItem() {
     const t = text.trim();
     if (!t) return;
     const now = Date.now();
-    setItems([{ id: crypto.randomUUID(), text: t, done: false, createdAt: now, updatedAt: now, project: 'General', tags: [], dueAt: null, recurring: 'none' }, ...items]);
+    setItems([{ id: crypto.randomUUID(), text: t, done: false, createdAt: now, updatedAt: now, project: 'General', tags: [] }, ...items]);
     setText('');
   }
 
+  function triggerCelebrate() {
+    try {
+      playTone({ freq: 880, duration: 110, type: 'triangle' });
+      setTimeout(() => playTone({ freq: 1318.5, duration: 130, type: 'triangle' }), 120);
+      setTimeout(() => playTone({ freq: 1760, duration: 140, type: 'triangle' }), 260);
+    } catch {}
+    setCelebrate(true);
+    setToast(true);
+    setTimeout(() => setCelebrate(false), 900);
+    setTimeout(() => setToast(false), 1200);
+  }
+
   function toggle(id) {
+    const target = items.find(i => i.id === id);
+    const willBeDone = target ? !target.done : false;
     setItems(items.map(i => {
       if (i.id !== id) return i;
       const done = !i.done;
       const updated = { ...i, done, updatedAt: Date.now() };
       if (done && i.recurring && i.recurring !== 'none' && i.dueAt) {
-        // spawn next recurring
         const next = { ...i, id: crypto.randomUUID(), done: false, createdAt: Date.now(), updatedAt: Date.now(), dueAt: nextDue(i.dueAt, i.recurring) };
         return [updated, next];
       }
       return updated;
     }).flat());
+    if (willBeDone) {
+      setPulseId(id);
+      triggerCelebrate();
+      setTimeout(() => setPulseId(null), 800);
+    }
   }
   function remove(id) { setItems(items.filter(i => i.id !== id)); }
   function edit(id, value) { setItems(items.map(i => i.id === id ? { ...i, text: value, updatedAt: Date.now() } : i)); }
@@ -45,7 +67,7 @@ export default function TodoList() {
 
   const projects = useMemo(() => ['all', 'General', ...Array.from(new Set(items.map(i => i.project).filter(Boolean)))], [items]);
 
-  // reminders
+  // Reminders (left as-is for legacy tasks that may still have due times set elsewhere)
   useEffect(() => {
     const id = setInterval(() => {
       const now = Date.now();
@@ -65,7 +87,8 @@ export default function TodoList() {
     if (project !== 'all') list = list.filter(i => i.project === project);
     const tags = tagsFilter.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
     if (tags.length) list = list.filter(i => (i.tags||[]).some(t => tags.includes(t.toLowerCase())));
-    return list;
+    const ordered = [...list.filter(i => !i.done), ...list.filter(i => i.done)];
+    return ordered;
   }, [items, filter, project, tagsFilter]);
 
   return (
@@ -87,26 +110,21 @@ export default function TodoList() {
       </div>
       <ul className="list">
         {shown.map(item => (
-          <li key={item.id} className="list-item">
-            <div className="item-left" style={{ flex: 1 }}>
+          <li key={item.id} className={`list-item ${item.done ? 'task-done' : 'task-active'} ${pulseId === item.id ? 'task-complete-pulse' : ''}`}>
+            <div className="item-left item-left-expand">
               <input type="checkbox" checked={item.done} onChange={() => toggle(item.id)} />
               <input className="input" value={item.text} onChange={e => edit(item.id, e.target.value)} />
             </div>
             <div className="item-actions">
               <input className="input project-input" placeholder="Project" value={item.project || ''} onChange={e => setItem(item.id, { project: e.target.value })} />
               <input className="input tags-input" placeholder="tags e.g. work,writing" value={(item.tags || []).join(', ')} onChange={e => setItem(item.id, { tags: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })} />
-              <input className="input due-input" type="datetime-local" value={item.dueAt ? new Date(item.dueAt).toISOString().slice(0,16) : ''} onChange={e => setItem(item.id, { dueAt: e.target.value ? new Date(e.target.value).getTime() : null })} />
-              <select className="select recur-select" value={item.recurring || 'none'} onChange={e => setItem(item.id, { recurring: e.target.value })}>
-                <option value="none">One-time</option>
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-              </select>
               <button className="btn danger" onClick={() => remove(item.id)}>Delete</button>
             </div>
           </li>
         ))}
       </ul>
+      {celebrate && <div className="complete-burst" aria-hidden="true" />}
+      {toast && <div className="completion-toast">Great job! Task completed</div>}
     </div>
   );
 }
