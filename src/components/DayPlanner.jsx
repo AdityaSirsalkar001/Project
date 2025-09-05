@@ -249,16 +249,16 @@ export default function DayPlanner() {
       </div>
 
       <div className="panel">
-        <div className="row between wrap" style={{ marginBottom: 12 }}>
+        <div className="row between wrap section-gap">
           <h3 className="panel-title">Shared Planner</h3>
-          <div className="row wrap" style={{ gap: 8 }}>
-            <select className="select" value={groupId} onChange={e => setGroupId(e.target.value)} style={{ minWidth: 160 }}>
+          <div className="row wrap">
+            <select className="select collab-select" value={groupId} onChange={e => setGroupId(e.target.value)}>
               <option value="">Select group</option>
               {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
             </select>
             <button className="btn secondary" onClick={onCreateGroup}>Create group</button>
             <button className="btn secondary" onClick={onInviteLink} disabled={!groupId}>Invite link</button>
-            <input className="input" placeholder="Paste invite token" value={inviteInput} onChange={e => setInviteInput(e.target.value)} style={{ maxWidth: 220 }} />
+            <input className="input invite-input" placeholder="Paste invite token" value={inviteInput} onChange={e => setInviteInput(e.target.value)} />
             <button className="btn" onClick={onAcceptInvite}>Join</button>
           </div>
         </div>
