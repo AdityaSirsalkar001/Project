@@ -246,7 +246,7 @@ html[data-theme="dark"] .palette-item:hover { background: rgba(255,255,255,.06);
 .mode-btn.long-variant.active { background: var(--accent-purple); border-color: var(--accent-purple); }
 
 /* Dark mode adjustments for focus accents */
-hofml[data-theme="dark"] .focus-accent { background: linear-gradient(180deg, rgba(147,197,253,.16), transparent 60%), var(--panel); }
+html[data-theme="dark"] .focus-accent { background: linear-gradient(180deg, rgba(147,197,253,.16), transparent 60%), var(--panel); }
 html[data-theme="dark"] .timer-ring { filter: drop-shadow(0 8px 22px rgba(147,197,253,.18)); }
 html[data-theme="dark"] .mode-btn.short-variant.active { background: #facc15; border-color: #facc15; color: #231a00; }
 html[data-theme="dark"] .mode-btn.long-variant.active { background: #c4b5fd; border-color: #c4b5fd; color: #0b0f1a; }
