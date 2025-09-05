@@ -262,6 +262,9 @@ html[data-theme="dark"] .accent-purple { color: #c4b5fd; }
 
 /* Tasks: enhancements */
 .item-left-expand { flex: 1; }
+.task-active { background: var(--panel); }
+.task-done { background: color-mix(in oklab, var(--success) 12%, transparent); border-color: color-mix(in oklab, var(--success) 30%, var(--border)); }
+html[data-theme="dark"] .task-done { background: color-mix(in oklab, var(--success) 20%, transparent); }
 .task-done .input { text-decoration: line-through; opacity: .65; }
 .task-complete-pulse { animation: task-pop .28s ease both; box-shadow: 0 0 0 2px var(--success) inset, 0 10px 26px rgba(22,163,74,.22); }
 @keyframes task-pop { 0% { transform: scale(1); } 60% { transform: scale(1.02); } 100% { transform: scale(1); } }
