@@ -82,6 +82,45 @@ export default function DayPlanner() {
 
   function onDateChange(e) { setSelected(e.target.value); }
 
+  // Load groups for current user
+  useEffect(() => {
+    if (!useCloud || !user?.id) return;
+    (async () => {
+      const gs = await getMyGroups();
+      setGroups(gs);
+      if (!groupId && gs.length) setGroupId(gs[0].id);
+    })();
+  }, [useCloud, user?.id]);
+
+  async function onCreateGroup() {
+    const name = prompt('Group name');
+    if (!name) return;
+    const g = await createGroup(name);
+    if (g) { const gs = await getMyGroups(); setGroups(gs); setGroupId(g.id); }
+  }
+
+  async function onInviteLink() {
+    if (!groupId) return;
+    const token = await createInvite(groupId);
+    if (token) {
+      const url = `${window.location.origin}#invite=${token}`;
+      try { await navigator.clipboard.writeText(url); alert('Invite link copied to clipboard'); } catch { alert(url); }
+    }
+  }
+
+  async function onAcceptInvite() {
+    const token = inviteInput.trim();
+    if (!token) return;
+    const res = await acceptInvite(token);
+    if (res.ok) {
+      const gs = await getMyGroups(); setGroups(gs);
+      setGroupId(res.group_id);
+      setInviteInput('');
+    } else {
+      alert('Invalid or expired invite');
+    }
+  }
+
   const dayKeys = Array.from({ length: Number(days) }, (_, i) => dateKeyLocal(addDays(selected, i)));
   const [editing, setEditing] = useState(null);
 
