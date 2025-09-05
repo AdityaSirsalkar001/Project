@@ -91,6 +91,9 @@ export default function DayPlanner() {
     const day = { ...getDaySlots(dayKey) };
     delete day[hour];
     setPlanner({ ...planner, [dayKey]: day });
+    if (useCloud) {
+      deleteSlotServer(dayKey, hour);
+    }
   }
 
   return (
