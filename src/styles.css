@@ -296,6 +296,11 @@ html[data-theme="dark"] .accent-purple { color: #c4b5fd; }
 /* Date input */
 .date-input { max-width: 180px; }
 
+/* Collaboration UI utilities */
+.section-gap { margin-bottom: 12px; }
+.collab-select { min-width: 160px; }
+.invite-input { max-width: 220px; }
+
 /* Dark mode: improve native dropdown/options and calendar icon visibility */
 html[data-theme="dark"] .select,
 html[data-theme="dark"] select { background-color: rgba(255,255,255,.06); color: var(--text); border-color: var(--border); color-scheme: dark; }
