@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { usePersistentState } from '../lib/hooks.js';
 
 function hoursRange(start = 6, end = 22) {
@@ -40,12 +40,8 @@ export default function DayPlanner() {
     const nextDay = { ...getDaySlots(dayKey), [hour]: { text, done: prev.done, todoId: prev.todoId || null } };
     setPlanner({ ...planner, [dayKey]: nextDay });
     const t = text.trim();
-    if (t) {
-      if (prev.todoId) {
-        setTodos(todos.map(td => td.id === prev.todoId ? { ...td, text: t, updatedAt: Date.now() } : td));
-      } else {
-        createLinkedTodo(dayKey, hour, t, prev.done);
-      }
+    if (t && prev.todoId) {
+      setTodos(todos.map(td => td.id === prev.todoId ? { ...td, text: t, updatedAt: Date.now() } : td));
     }
   }
 
@@ -70,6 +66,14 @@ export default function DayPlanner() {
   function onDateChange(e) { setSelected(e.target.value); }
 
   const dayKeys = Array.from({ length: Number(days) }, (_, i) => dateKeyLocal(addDays(selected, i)));
+  const [editing, setEditing] = useState(null);
+  function addTodoFromSlot(dayKey, hour) {
+    const slot = slotFor(dayKey, hour);
+    const t = slot.text.trim();
+    if (!t) return;
+    if (slot.todoId) return;
+    createLinkedTodo(dayKey, hour, t, slot.done);
+  }
 
   return (
     <div className="panel">
@@ -99,10 +103,15 @@ export default function DayPlanner() {
               <div className="planner-time">{String(h).padStart(2, '0')}:00</div>
               {dayKeys.map(k => {
                 const slot = slotFor(k, h);
+                const key = k + '|' + h;
+                const showAdd = editing === key && slot.text.trim() && !slot.todoId;
                 return (
-                  <div key={k + '-' + h} className={`planner-slot ${slot.done ? 'planner-done' : ''}`}>
+                  <div key={k + '-' + h} className={`planner-slot ${slot.done ? 'planner-done' : ''} ${editing === key ? 'slot-editing' : ''}`}>
                     <input className="planner-checkbox" type="checkbox" checked={slot.done} onChange={e => setDone(k, h, e.target.checked)} />
-                    <textarea className="planner-cell" value={slot.text} onChange={e => setSlot(k, h, e.target.value)} />
+                    <textarea className="planner-cell" value={slot.text} onChange={e => setSlot(k, h, e.target.value)} onFocus={() => setEditing(key)} onBlur={() => setTimeout(() => { setEditing(curr => curr === key ? null : curr); }, 120)} />
+                    {showAdd && (
+                      <button className="btn success small planner-add-btn" onMouseDown={e => e.preventDefault()} onClick={() => addTodoFromSlot(k, h)}>Add</button>
+                    )}
                   </div>
                 );
               })}
