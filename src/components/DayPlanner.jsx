@@ -108,6 +108,28 @@ export default function DayPlanner() {
     }
   }
 
+  useEffect(() => {
+    if (!useCloud) return;
+    const unsubscribe = subscribePlanner((payload) => {
+      const row = payload.new || payload.old;
+      const dayKey = row?.day;
+      const hour = row?.hour;
+      if (!dayKey || hour == null) return;
+      setPlanner(prev => {
+        const next = { ...prev };
+        const day = { ...(next[dayKey] || {}) };
+        if (payload.eventType === 'DELETE') {
+          delete day[hour];
+        } else {
+          day[hour] = { text: row.text || '', done: !!row.done, todoId: row.todo_id || null };
+        }
+        next[dayKey] = day;
+        return next;
+      });
+    });
+    return () => unsubscribe && unsubscribe();
+  }, [useCloud]);
+
   return (
     <div className="panel">
       <h3 className="panel-title">Plan Your Day</h3>
