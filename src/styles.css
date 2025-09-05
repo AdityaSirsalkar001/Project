@@ -134,8 +134,8 @@ html[data-theme="dark"] .planner-done .planner-cell { background: color-mix(in o
 .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(37,99,235,.25); }
 .btn:active { transform: translateY(0); }
 .btn.secondary { background: var(--panel); color: var(--text); border: 1px solid var(--border); }
-.btn.danger { background: var(--danger); border-color: var(--danger); }
-.btn.success { background: var(--success); border-color: var(--success); }
+.btn.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn.success { background: var(--success); border-color: var(--success); color: #fff; }
 .btn.purple { background: var(--accent-purple); border-color: var(--accent-purple); color: #fff; }
 .btn.teal { background: var(--accent-teal); border-color: var(--accent-teal); color: #062522; }
 .btn.rose { background: var(--accent-rose); border-color: var(--accent-rose); color: #fff; }
