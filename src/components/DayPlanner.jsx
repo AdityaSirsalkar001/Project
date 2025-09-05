@@ -20,6 +20,8 @@ export default function DayPlanner() {
   const [selected, setSelected] = usePersistentState('planner:date', dateKeyLocal());
   const [days, setDays] = usePersistentState('planner:span', 5);
   const [todos, setTodos] = usePersistentState('todos', []);
+  const supabase = getSupabase();
+  const useCloud = !!supabase;
 
   function getDaySlots(dayKey) { return planner[dayKey] || {}; }
   function slotFor(dayKey, hour) {
