@@ -79,10 +79,47 @@ export default function TodoList() {
       setTimeout(() => setPulseId(null), 800);
     }
   }
-  function remove(id) { setItems(items.filter(i => i.id !== id)); }
+  function remove(id) {
+    setItems(items.filter(i => i.id !== id));
+    const newPlanner = { ...planner };
+    let touched = false;
+    Object.keys(newPlanner).forEach(dayKey => {
+      const day = { ...(newPlanner[dayKey] || {}) };
+      let changed = false;
+      Object.keys(day).forEach(h => {
+        const v = day[h];
+        if (v && typeof v === 'object' && v.todoId === id) {
+          // remove from planner entirely
+          delete day[h];
+          changed = true; touched = true;
+        }
+      });
+      if (changed) newPlanner[dayKey] = day;
+    });
+    if (touched) setPlanner(newPlanner);
+  }
   function edit(id, value) { setItems(items.map(i => i.id === id ? { ...i, text: value, updatedAt: Date.now() } : i)); }
   function setItem(id, patch) { setItems(items.map(i => i.id === id ? { ...i, ...patch, updatedAt: Date.now() } : i)); }
-  function clearCompleted() { setItems(items.filter(i => !i.done)); }
+  function clearCompleted() {
+    const toRemove = new Set(items.filter(i => i.done).map(i => i.id));
+    setItems(items.filter(i => !i.done));
+    if (toRemove.size === 0) return;
+    const newPlanner = { ...planner };
+    let touched = false;
+    Object.keys(newPlanner).forEach(dayKey => {
+      const day = { ...(newPlanner[dayKey] || {}) };
+      let changed = false;
+      Object.keys(day).forEach(h => {
+        const v = day[h];
+        if (v && typeof v === 'object' && v.todoId && toRemove.has(v.todoId)) {
+          delete day[h];
+          changed = true; touched = true;
+        }
+      });
+      if (changed) newPlanner[dayKey] = day;
+    });
+    if (touched) setPlanner(newPlanner);
+  }
 
   const projects = useMemo(() => ['all', 'General', ...Array.from(new Set(items.map(i => i.project).filter(Boolean)))], [items]);
 
