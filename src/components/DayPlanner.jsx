@@ -77,6 +77,18 @@ export default function DayPlanner() {
 
   const dayKeys = Array.from({ length: Number(days) }, (_, i) => dateKeyLocal(addDays(selected, i)));
   const [editing, setEditing] = useState(null);
+
+  useEffect(() => {
+    if (!useCloud) return;
+    let mounted = true;
+    (async () => {
+      const data = await fetchPlannerRange(selected, days);
+      if (mounted && data) {
+        setPlanner(prev => ({ ...prev, ...data }));
+      }
+    })();
+    return () => { mounted = false; };
+  }, [useCloud, selected, days]);
   function addTodoFromSlot(dayKey, hour) {
     const slot = slotFor(dayKey, hour);
     const t = slot.text.trim();
