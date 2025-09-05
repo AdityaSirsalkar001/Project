@@ -30,28 +30,28 @@ export default function DayPlanner() {
   const supabase = getSupabase();
   const useCloud = !!supabase;
 
-  function getDaySlots(dayKey) { return planner[dayKey] || {}; }
-  function slotFor(dayKey, hour) {
-    const v = getDaySlots(dayKey)[hour];
+  function getDaySlots(map, dayKey) { return map[dayKey] || {}; }
+  function slotFor(map, dayKey, hour) {
+    const v = getDaySlots(map, dayKey)[hour];
     if (typeof v === 'string') return { text: v, done: false, todoId: null };
     return { text: v?.text || '', done: !!v?.done, todoId: v?.todoId || null };
   }
 
-  function createLinkedTodo(dayKey, hour, text, done) {
+  function createLinkedTodo(setMap, map, dayKey, hour, text, done) {
     const now = Date.now();
     const todo = { id: crypto.randomUUID(), text, done: !!done, createdAt: now, updatedAt: now, project: 'Planner', tags: [] };
     setTodos([todo, ...todos]);
-    const nextDay = { ...getDaySlots(dayKey), [hour]: { text, done: !!done, todoId: todo.id } };
-    setPlanner({ ...planner, [dayKey]: nextDay });
+    const nextDay = { ...getDaySlots(map, dayKey), [hour]: { text, done: !!done, todoId: todo.id } };
+    setMap({ ...map, [dayKey]: nextDay });
     return todo.id;
   }
 
-  function setSlot(dayKey, hour, text) {
-    const prev = slotFor(dayKey, hour);
-    const nextDay = { ...getDaySlots(dayKey), [hour]: { text, done: prev.done, todoId: prev.todoId || null } };
-    setPlanner({ ...planner, [dayKey]: nextDay });
-    if (useCloud) {
-      upsertSlotServer(dayKey, hour, { text, done: prev.done, todoId: prev.todoId || null });
+  function setSlotGeneric(setMap, map, scope, dayKey, hour, text) {
+    const prev = slotFor(map, dayKey, hour);
+    const nextDay = { ...getDaySlots(map, dayKey), [hour]: { text, done: prev.done, todoId: prev.todoId || null } };
+    setMap({ ...map, [dayKey]: nextDay });
+    if (useCloud && scope) {
+      upsertSlotServer(dayKey, hour, { text, done: prev.done, todoId: prev.todoId || null }, scope);
     }
     const t = text.trim();
     if (t && prev.todoId) {
@@ -59,17 +59,17 @@ export default function DayPlanner() {
     }
   }
 
-  function setDone(dayKey, hour, done) {
-    const prev = slotFor(dayKey, hour);
-    const nextDay = { ...getDaySlots(dayKey), [hour]: { text: prev.text, done, todoId: prev.todoId || null } };
-    setPlanner({ ...planner, [dayKey]: nextDay });
-    if (useCloud) {
-      upsertSlotServer(dayKey, hour, { text: prev.text, done, todoId: prev.todoId || null });
+  function setDoneGeneric(setMap, map, scope, dayKey, hour, done) {
+    const prev = slotFor(map, dayKey, hour);
+    const nextDay = { ...getDaySlots(map, dayKey), [hour]: { text: prev.text, done, todoId: prev.todoId || null } };
+    setMap({ ...map, [dayKey]: nextDay });
+    if (useCloud && scope) {
+      upsertSlotServer(dayKey, hour, { text: prev.text, done, todoId: prev.todoId || null }, scope);
     }
     if (prev.todoId) {
       setTodos(todos.map(td => td.id === prev.todoId ? { ...td, done, updatedAt: Date.now() } : td));
     } else if (prev.text && prev.text.trim()) {
-      const id = createLinkedTodo(dayKey, hour, prev.text.trim(), done);
+      const id = createLinkedTodo(setMap, map, dayKey, hour, prev.text.trim(), done);
       setTodos(todos.map(td => td.id === id ? { ...td, done } : td));
     }
   }
