@@ -87,7 +87,7 @@ export default function DayPlanner() {
       </div>
 
       <div className="planner-matrix-wrapper">
-        <div className="planner-matrix" style={{ '--days': days }}>
+        <div className={`planner-matrix days-${days}`}>
           <div className="planner-matrix-header">
             <div className="planner-time"></div>
             {dayKeys.map(k => (
