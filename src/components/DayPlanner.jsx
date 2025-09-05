@@ -18,10 +18,15 @@ function addDays(d, delta) { const nd = new Date(d + 'T00:00:00'); nd.setDate(nd
 function labelFor(key) { const d = new Date(key + 'T00:00:00'); return d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }); }
 
 export default function DayPlanner() {
-  const [planner, setPlanner] = usePersistentState('planner', {});
+  const { user } = useAuth();
+  const [myPlanner, setMyPlanner] = usePersistentState('planner', {});
+  const [groupPlanner, setGroupPlanner] = useState({});
   const [selected, setSelected] = usePersistentState('planner:date', dateKeyLocal());
   const [days, setDays] = usePersistentState('planner:span', 5);
   const [todos, setTodos] = usePersistentState('todos', []);
+  const [groups, setGroups] = useState([]);
+  const [groupId, setGroupId] = useState('');
+  const [inviteInput, setInviteInput] = useState('');
   const supabase = getSupabase();
   const useCloud = !!supabase;
 
