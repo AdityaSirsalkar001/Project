@@ -16,8 +16,22 @@ export default function DayPlanner() {
 
   const daySlots = planner[selected] || {};
 
+  function slotFor(hour) {
+    const v = daySlots[hour];
+    if (typeof v === 'string') return { text: v, done: false };
+    return { text: v?.text || '', done: !!v?.done };
+  }
+
   function setSlot(hour, text) {
-    const nextDay = { ...daySlots, [hour]: text };
+    const prev = slotFor(hour);
+    const nextDay = { ...daySlots, [hour]: { text, done: prev.done } };
+    const next = { ...planner, [selected]: nextDay };
+    setPlanner(next);
+  }
+
+  function setDone(hour, done) {
+    const prev = slotFor(hour);
+    const nextDay = { ...daySlots, [hour]: { text: prev.text, done } };
     const next = { ...planner, [selected]: nextDay };
     setPlanner(next);
   }
@@ -42,12 +56,18 @@ export default function DayPlanner() {
         <input className="input date-input" type="date" value={fmtDateInput(selected)} onChange={onDateChange} />
       </div>
       <div className="planner-grid">
-        {hoursRange().map(h => (
-          <div className="planner-row" key={h}>
-            <div className="planner-time">{String(h).padStart(2, '0')}:00</div>
-            <textarea className="planner-cell" value={daySlots[h] || ''} onChange={e => setSlot(h, e.target.value)} placeholder="Add event, task, or note" />
-          </div>
-        ))}
+        {hoursRange().map(h => {
+          const slot = slotFor(h);
+          return (
+            <div className="planner-row" key={h}>
+              <div className="planner-time">{String(h).padStart(2, '0')}:00</div>
+              <div className={`planner-slot ${slot.done ? 'planner-done' : ''}`}>
+                <input className="planner-checkbox" type="checkbox" checked={slot.done} onChange={e => setDone(h, e.target.checked)} />
+                <textarea className="planner-cell" value={slot.text} onChange={e => setSlot(h, e.target.value)} placeholder="Add event, task, or note" />
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
