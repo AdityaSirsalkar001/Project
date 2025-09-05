@@ -168,7 +168,7 @@ export default function TodoList() {
         {shown.map(item => (
           <li key={item.id} className={`list-item ${item.done ? 'task-done' : 'task-active'} ${pulseId === item.id ? 'task-complete-pulse' : ''}`}>
             <div className="item-left item-left-expand">
-              <input type="checkbox" checked={item.done} onChange={() => toggle(item.id)} />
+              <input className="task-checkbox" type="checkbox" checked={item.done} onChange={() => toggle(item.id)} />
               <input className="input" value={item.text} onChange={e => edit(item.id, e.target.value)} />
             </div>
             <div className="item-actions">
