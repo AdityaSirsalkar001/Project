@@ -117,6 +117,14 @@ html[data-theme="dark"] .planner-done .planner-cell { background: color-mix(in o
 .input, .select, .textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); background: transparent; color: var(--text); border-radius: 10px; }
 .textarea { min-height: 120px; resize: vertical; }
 
+/* Improve native control contrast in dark mode without changing shape/colors */
+@supports (color-scheme: light) {
+  html { color-scheme: light; }
+  html[data-theme="dark"] { color-scheme: dark; }
+}
+html[data-theme="dark"] input, html[data-theme="dark"] select, html[data-theme="dark"] textarea { background-color: rgba(255,255,255,.03); }
+html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1) brightness(1.1) contrast(1.1); }
+
 .row { display: flex; gap: 8px; align-items: center; }
 .row.wrap { flex-wrap: wrap; }
 .row.between { justify-content: space-between; }
@@ -238,7 +246,7 @@ html[data-theme="dark"] .palette-item:hover { background: rgba(255,255,255,.06);
 .mode-btn.long-variant.active { background: var(--accent-purple); border-color: var(--accent-purple); }
 
 /* Dark mode adjustments for focus accents */
-html[data-theme="dark"] .focus-accent { background: linear-gradient(180deg, rgba(147,197,253,.16), transparent 60%), var(--panel); }
+hofml[data-theme="dark"] .focus-accent { background: linear-gradient(180deg, rgba(147,197,253,.16), transparent 60%), var(--panel); }
 html[data-theme="dark"] .timer-ring { filter: drop-shadow(0 8px 22px rgba(147,197,253,.18)); }
 html[data-theme="dark"] .mode-btn.short-variant.active { background: #facc15; border-color: #facc15; color: #231a00; }
 html[data-theme="dark"] .mode-btn.long-variant.active { background: #c4b5fd; border-color: #c4b5fd; color: #0b0f1a; }
