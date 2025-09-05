@@ -94,7 +94,7 @@ html[data-theme="dark"] .planner-day-label { box-shadow: 0 1px 0 rgba(255,255,25
 .planner-time { text-align: right; padding-right: 10px; color: var(--muted); }
 
 .planner-slot { display: flex; align-items: flex-start; gap: 8px; position: relative; }
-.task-checkbox, .planner-checkbox { appearance: none; -webkit-appearance: none; display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 0; border: 2px solid var(--ck, var(--primary)); background: transparent; cursor: pointer; transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .1s ease; position: relative; box-sizing: border-box; overflow: visible; line-height: 0; }
+.task-checkbox, .planner-checkbox { appearance: none; -webkit-appearance: none; display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 0; border: 2px solid var(--ck, var(--primary)); background: transparent; cursor: pointer; transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .1s ease; position: relative; box-sizing: border-box; overflow: hidden; line-height: 0; }
 .task-checkbox { --ck: var(--accent-teal); }
 .planner-checkbox { --ck: var(--muted); margin-top: 8px; }
 .planner-slot.has-task .planner-checkbox { --ck: var(--success); }
@@ -102,8 +102,8 @@ html[data-theme="dark"] .planner-day-label { box-shadow: 0 1px 0 rgba(255,255,25
 .task-checkbox:hover, .planner-checkbox:hover { transform: translateY(-1px); box-shadow: 0 6px 16px color-mix(in oklab, var(--ck) 22%, transparent); }
 .task-checkbox:focus-visible, .planner-checkbox:focus-visible { outline: 2px solid var(--ck); outline-offset: 2px; }
 .task-checkbox:checked, .planner-checkbox:checked { background: var(--ck); border-color: var(--ck); box-shadow: 0 6px 16px color-mix(in oklab, var(--ck) 25%, transparent); }
-.task-checkbox::after, .planner-checkbox::after { content: ""; position: absolute; width: 9px; height: 6px; left: 50%; top: 50%; border-right: 2px solid var(--primary-contrast); border-bottom: 2px solid var(--primary-contrast); transform: translate(-50%, -55%) rotate(45deg) scale(0); transform-origin: center; transition: transform .15s ease; }
-.task-checkbox:checked::after, .planner-checkbox:checked::after { transform: translate(-50%, -55%) rotate(45deg) scale(1); }
+.task-checkbox::after, .planner-checkbox::after { content: ""; position: absolute; width: 8px; height: 4px; left: 50%; top: 50%; border-right: 2px solid var(--primary-contrast); border-bottom: 2px solid var(--primary-contrast); transform: translate(-50%, -50%) rotate(45deg) scale(0); transform-origin: center; transition: transform .15s ease; }
+.task-checkbox:checked::after, .planner-checkbox:checked::after { transform: translate(-50%, -50%) rotate(45deg) scale(1); }
 @keyframes breathe { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--ck) 20%, transparent); } 50% { box-shadow: 0 0 0 6px color-mix(in oklab, var(--ck) 0%, transparent); } }
 @media (prefers-reduced-motion: reduce) { .task-checkbox:not(:checked), .planner-checkbox:not(:checked) { animation: none; } }
 .planner-cell { border: 1px dashed var(--border); border-radius: 10px; padding: 8px; min-height: 48px; background: transparent; color: var(--text); outline: none; box-shadow: none; transition: background-color .2s ease, box-shadow .2s ease; width: 100%; }
@@ -114,6 +114,7 @@ html[data-theme="dark"] .planner-cell { background: rgba(255,255,255,.02); }
 html[data-theme="dark"] .planner-slot:hover .planner-cell { background: rgba(147,197,253,.08); }
 html[data-theme="dark"] .planner-cell:focus { background: rgba(147,197,253,.12); }
 .planner-add-btn { align-self: flex-start; }
+.planner-del-btn { align-self: flex-start; }
 .btn.small { padding: 6px 10px; border-radius: 10px; font-size: 12px; }
 .planner-done .planner-cell { background: color-mix(in oklab, var(--success) 12%, transparent); border-color: color-mix(in oklab, var(--success) 30%, var(--border)); text-decoration: line-through; opacity: .8; }
 html[data-theme="dark"] .planner-done .planner-cell { background: color-mix(in oklab, var(--success) 18%, transparent); }
