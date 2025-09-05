@@ -94,9 +94,10 @@ html[data-theme="dark"] .planner-day-label { box-shadow: 0 1px 0 rgba(255,255,25
 .planner-time { text-align: right; padding-right: 10px; color: var(--muted); }
 
 .planner-slot { display: flex; align-items: flex-start; gap: 8px; position: relative; }
-.task-checkbox, .planner-checkbox { appearance: none; -webkit-appearance: none; display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--ck, var(--primary)); background: transparent; cursor: pointer; transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .1s ease; position: relative; }
+.task-checkbox, .planner-checkbox { appearance: none; -webkit-appearance: none; display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--ck, var(--primary)); background: transparent; cursor: pointer; transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .1s ease; position: relative; }
 .task-checkbox { --ck: var(--accent-teal); }
-.planner-checkbox { --ck: var(--success); margin-top: 8px; }
+.planner-checkbox { --ck: var(--muted); margin-top: 8px; }
+.planner-slot.has-task .planner-checkbox { --ck: var(--success); }
 .task-checkbox:not(:checked), .planner-checkbox:not(:checked) { box-shadow: 0 0 0 0 color-mix(in oklab, var(--ck) 30%, transparent); animation: breathe 2.6s ease-in-out infinite; }
 .task-checkbox:hover, .planner-checkbox:hover { transform: translateY(-1px); box-shadow: 0 6px 16px color-mix(in oklab, var(--ck) 22%, transparent); }
 .task-checkbox:focus-visible, .planner-checkbox:focus-visible { outline: 2px solid var(--ck); outline-offset: 2px; }
