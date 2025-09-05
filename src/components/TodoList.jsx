@@ -16,6 +16,7 @@ export default function TodoList() {
   const [filter, setFilter] = useState('all');
   const [project, setProject] = usePersistentState('todos:project', 'all');
   const [tagsFilter, setTagsFilter] = useState('');
+  const [planner, setPlanner] = usePersistentState('planner', {});
 
   const [celebrate, setCelebrate] = useState(false);
   const [pulseId, setPulseId] = useState(null);
@@ -44,7 +45,7 @@ export default function TodoList() {
   function toggle(id) {
     const target = items.find(i => i.id === id);
     const willBeDone = target ? !target.done : false;
-    setItems(items.map(i => {
+    const nextItems = items.map(i => {
       if (i.id !== id) return i;
       const done = !i.done;
       const updated = { ...i, done, updatedAt: Date.now() };
@@ -53,7 +54,25 @@ export default function TodoList() {
         return [updated, next];
       }
       return updated;
-    }).flat());
+    }).flat();
+    setItems(nextItems);
+
+    // reflect into planner slots linked to this todo id
+    const newPlanner = { ...planner };
+    Object.keys(newPlanner).forEach(dayKey => {
+      const day = newPlanner[dayKey] || {};
+      let changed = false;
+      Object.keys(day).forEach(h => {
+        const v = day[h];
+        if (v && typeof v === 'object' && v.todoId === id) {
+          day[h] = { ...v, done: willBeDone };
+          changed = true;
+        }
+      });
+      if (changed) newPlanner[dayKey] = { ...day };
+    });
+    setPlanner(newPlanner);
+
     if (willBeDone) {
       setPulseId(id);
       triggerCelebrate();
