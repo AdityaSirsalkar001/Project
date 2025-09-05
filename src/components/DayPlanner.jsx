@@ -85,17 +85,27 @@ export default function DayPlanner() {
   const dayKeys = Array.from({ length: Number(days) }, (_, i) => dateKeyLocal(addDays(selected, i)));
   const [editing, setEditing] = useState(null);
 
+  // Load my planner (user scope)
   useEffect(() => {
-    if (!useCloud) return;
+    if (!useCloud || !user?.id) return;
     let mounted = true;
     (async () => {
-      const data = await fetchPlannerRange(selected, days);
-      if (mounted && data) {
-        setPlanner(prev => ({ ...prev, ...data }));
-      }
+      const data = await fetchPlannerRange(selected, days, { type: 'user', id: user.id });
+      if (mounted && data) setMyPlanner(prev => ({ ...prev, ...data }));
     })();
     return () => { mounted = false; };
-  }, [useCloud, selected, days]);
+  }, [useCloud, user?.id, selected, days]);
+
+  // Load group planner (group scope)
+  useEffect(() => {
+    if (!useCloud || !groupId) return;
+    let mounted = true;
+    (async () => {
+      const data = await fetchPlannerRange(selected, days, { type: 'group', id: groupId });
+      if (mounted && data) setGroupPlanner(prev => ({ ...prev, ...data }));
+    })();
+    return () => { mounted = false; };
+  }, [useCloud, groupId, selected, days]);
   function addTodoFromSlotGeneric(setMap, map, dayKey, hour) {
     const slot = slotFor(map, dayKey, hour);
     const t = slot.text.trim();
