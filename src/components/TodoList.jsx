@@ -87,7 +87,8 @@ export default function TodoList() {
     if (project !== 'all') list = list.filter(i => i.project === project);
     const tags = tagsFilter.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
     if (tags.length) list = list.filter(i => (i.tags||[]).some(t => tags.includes(t.toLowerCase())));
-    return list;
+    const ordered = [...list.filter(i => !i.done), ...list.filter(i => i.done)];
+    return ordered;
   }, [items, filter, project, tagsFilter]);
 
   return (
@@ -109,7 +110,7 @@ export default function TodoList() {
       </div>
       <ul className="list">
         {shown.map(item => (
-          <li key={item.id} className={`list-item ${item.done ? 'task-done' : ''} ${pulseId === item.id ? 'task-complete-pulse' : ''}`}>
+          <li key={item.id} className={`list-item ${item.done ? 'task-done' : 'task-active'} ${pulseId === item.id ? 'task-complete-pulse' : ''}`}>
             <div className="item-left item-left-expand">
               <input type="checkbox" checked={item.done} onChange={() => toggle(item.id)} />
               <input className="input" value={item.text} onChange={e => edit(item.id, e.target.value)} />
