@@ -43,6 +43,9 @@ export default function DayPlanner() {
     const prev = slotFor(dayKey, hour);
     const nextDay = { ...getDaySlots(dayKey), [hour]: { text, done: prev.done, todoId: prev.todoId || null } };
     setPlanner({ ...planner, [dayKey]: nextDay });
+    if (useCloud) {
+      upsertSlotServer(dayKey, hour, { text, done: prev.done, todoId: prev.todoId || null });
+    }
     const t = text.trim();
     if (t && prev.todoId) {
       setTodos(todos.map(td => td.id === prev.todoId ? { ...td, text: t, updatedAt: Date.now() } : td));
