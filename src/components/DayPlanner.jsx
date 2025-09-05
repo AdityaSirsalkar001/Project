@@ -17,26 +17,48 @@ export default function DayPlanner() {
   const [planner, setPlanner] = usePersistentState('planner', {});
   const [selected, setSelected] = usePersistentState('planner:date', dateKeyLocal());
   const [days, setDays] = usePersistentState('planner:span', 5);
+  const [todos, setTodos] = usePersistentState('todos', []);
 
   function getDaySlots(dayKey) { return planner[dayKey] || {}; }
   function slotFor(dayKey, hour) {
     const v = getDaySlots(dayKey)[hour];
-    if (typeof v === 'string') return { text: v, done: false };
-    return { text: v?.text || '', done: !!v?.done };
+    if (typeof v === 'string') return { text: v, done: false, todoId: null };
+    return { text: v?.text || '', done: !!v?.done, todoId: v?.todoId || null };
+  }
+
+  function createLinkedTodo(dayKey, hour, text, done) {
+    const now = Date.now();
+    const todo = { id: crypto.randomUUID(), text, done: !!done, createdAt: now, updatedAt: now, project: 'Planner', tags: [] };
+    setTodos([todo, ...todos]);
+    const nextDay = { ...getDaySlots(dayKey), [hour]: { text, done: !!done, todoId: todo.id } };
+    setPlanner({ ...planner, [dayKey]: nextDay });
+    return todo.id;
   }
 
   function setSlot(dayKey, hour, text) {
     const prev = slotFor(dayKey, hour);
-    const nextDay = { ...getDaySlots(dayKey), [hour]: { text, done: prev.done } };
-    const next = { ...planner, [dayKey]: nextDay };
-    setPlanner(next);
+    const nextDay = { ...getDaySlots(dayKey), [hour]: { text, done: prev.done, todoId: prev.todoId || null } };
+    setPlanner({ ...planner, [dayKey]: nextDay });
+    const t = text.trim();
+    if (t) {
+      if (prev.todoId) {
+        setTodos(todos.map(td => td.id === prev.todoId ? { ...td, text: t, updatedAt: Date.now() } : td));
+      } else {
+        createLinkedTodo(dayKey, hour, t, prev.done);
+      }
+    }
   }
 
   function setDone(dayKey, hour, done) {
     const prev = slotFor(dayKey, hour);
-    const nextDay = { ...getDaySlots(dayKey), [hour]: { text: prev.text, done } };
-    const next = { ...planner, [dayKey]: nextDay };
-    setPlanner(next);
+    const nextDay = { ...getDaySlots(dayKey), [hour]: { text: prev.text, done, todoId: prev.todoId || null } };
+    setPlanner({ ...planner, [dayKey]: nextDay });
+    if (prev.todoId) {
+      setTodos(todos.map(td => td.id === prev.todoId ? { ...td, done, updatedAt: Date.now() } : td));
+    } else if (prev.text && prev.text.trim()) {
+      const id = createLinkedTodo(dayKey, hour, prev.text.trim(), done);
+      setTodos(todos.map(td => td.id === id ? { ...td, done } : td));
+    }
   }
 
   function changeDate(deltaDays) {
@@ -80,7 +102,7 @@ export default function DayPlanner() {
                 return (
                   <div key={k + '-' + h} className={`planner-slot ${slot.done ? 'planner-done' : ''}`}>
                     <input className="planner-checkbox" type="checkbox" checked={slot.done} onChange={e => setDone(k, h, e.target.checked)} />
-                    <textarea className="planner-cell" value={slot.text} onChange={e => setSlot(k, h, e.target.value)} placeholder="Add event, task, or note" />
+                    <textarea className="planner-cell" value={slot.text} onChange={e => setSlot(k, h, e.target.value)} />
                   </div>
                 );
               })}
