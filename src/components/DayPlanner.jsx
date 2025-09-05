@@ -96,22 +96,22 @@ export default function DayPlanner() {
     })();
     return () => { mounted = false; };
   }, [useCloud, selected, days]);
-  function addTodoFromSlot(dayKey, hour) {
-    const slot = slotFor(dayKey, hour);
+  function addTodoFromSlotGeneric(setMap, map, dayKey, hour) {
+    const slot = slotFor(map, dayKey, hour);
     const t = slot.text.trim();
     if (!t) return;
     if (slot.todoId) return;
-    createLinkedTodo(dayKey, hour, t, slot.done);
+    createLinkedTodo(setMap, map, dayKey, hour, t, slot.done);
   }
-  function deleteLinkedTodo(dayKey, hour) {
-    const slot = slotFor(dayKey, hour);
+  function deleteLinkedTodoGeneric(setMap, map, scope, dayKey, hour) {
+    const slot = slotFor(map, dayKey, hour);
     if (!slot.todoId) return;
     setTodos(todos.filter(td => td.id !== slot.todoId));
-    const day = { ...getDaySlots(dayKey) };
+    const day = { ...getDaySlots(map, dayKey) };
     delete day[hour];
-    setPlanner({ ...planner, [dayKey]: day });
-    if (useCloud) {
-      deleteSlotServer(dayKey, hour);
+    setMap({ ...map, [dayKey]: day });
+    if (useCloud && scope) {
+      deleteSlotServer(dayKey, hour, scope);
     }
   }
 
