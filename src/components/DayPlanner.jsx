@@ -197,52 +197,110 @@ export default function DayPlanner() {
   }, [useCloud, groupId]);
 
   return (
-    <div className="panel">
-      <h3 className="panel-title">Plan Your Day</h3>
-      <div className="planner-toolbar row wrap">
-        <button className="btn secondary" onClick={() => changeDate(-Number(days))}>Previous</button>
-        <button className="btn secondary" onClick={() => setSelected(dateKeyLocal())}>Today</button>
-        <button className="btn secondary" onClick={() => changeDate(Number(days))}>Next</button>
-        <input className="input date-input" type="date" value={fmtDateInput(selected)} onChange={onDateChange} />
-        <select className="select days-span-select" value={days} onChange={e => setDays(Number(e.target.value))}>
-          <option value={3}>3 days</option>
-          <option value={5}>5 days</option>
-          <option value={7}>7 days</option>
-        </select>
-      </div>
+    <div className="section">
+      <div className="panel">
+        <h3 className="panel-title">My Planner</h3>
+        <div className="planner-toolbar row wrap">
+          <button className="btn secondary" onClick={() => changeDate(-Number(days))}>Previous</button>
+          <button className="btn secondary" onClick={() => setSelected(dateKeyLocal())}>Today</button>
+          <button className="btn secondary" onClick={() => changeDate(Number(days))}>Next</button>
+          <input className="input date-input" type="date" value={fmtDateInput(selected)} onChange={onDateChange} />
+          <select className="select days-span-select" value={days} onChange={e => setDays(Number(e.target.value))}>
+            <option value={3}>3 days</option>
+            <option value={5}>5 days</option>
+            <option value={7}>7 days</option>
+          </select>
+        </div>
 
-      <div className="planner-matrix-wrapper">
-        <div className={`planner-matrix days-${days}`}>
-          <div className="planner-matrix-header">
-            <div className="planner-time"></div>
-            {dayKeys.map(k => (
-              <div className="planner-day-label" key={k}>{labelFor(k)}</div>
+        <div className="planner-matrix-wrapper">
+          <div className={`planner-matrix days-${days}`}>
+            <div className="planner-matrix-header">
+              <div className="planner-time"></div>
+              {dayKeys.map(k => (
+                <div className="planner-day-label" key={k}>{labelFor(k)}</div>
+              ))}
+            </div>
+            {hoursRange().map(h => (
+              <div className="planner-matrix-row" key={h}>
+                <div className="planner-time">{String(h).padStart(2, '0')}:00</div>
+                {dayKeys.map(k => {
+                  const slot = slotFor(myPlanner, k, h);
+                  const key = 'me|' + k + '|' + h;
+                  const showAdd = editing === key && slot.text.trim() && !slot.todoId;
+                  const showDelete = editing === key && !!slot.todoId;
+                  const scope = useCloud && user?.id ? { type: 'user', id: user.id } : null;
+                  return (
+                    <div key={'me-' + k + '-' + h} className={`planner-slot ${slot.done ? 'planner-done' : ''} ${slot.todoId ? 'has-task' : ''} ${editing === key ? 'slot-editing' : ''}`}>
+                      <input className="planner-checkbox" type="checkbox" checked={slot.done} onChange={e => setDoneGeneric(setMyPlanner, myPlanner, scope, k, h, e.target.checked)} />
+                      <textarea className="planner-cell" value={slot.text} onChange={e => setSlotGeneric(setMyPlanner, myPlanner, scope, k, h, e.target.value)} onFocus={() => setEditing(key)} onBlur={() => setTimeout(() => { setEditing(curr => curr === key ? null : curr); }, 120)} />
+                      {showAdd && (
+                        <button className="btn success small planner-add-btn" onMouseDown={e => e.preventDefault()} onClick={() => addTodoFromSlotGeneric(setMyPlanner, myPlanner, k, h)}>Add</button>
+                      )}
+                      {showDelete && (
+                        <button className="btn danger small planner-del-btn" onMouseDown={e => e.preventDefault()} onClick={() => deleteLinkedTodoGeneric(setMyPlanner, myPlanner, scope, k, h)}>Delete</button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             ))}
           </div>
-          {hoursRange().map(h => (
-            <div className="planner-matrix-row" key={h}>
-              <div className="planner-time">{String(h).padStart(2, '0')}:00</div>
-              {dayKeys.map(k => {
-                const slot = slotFor(k, h);
-                const key = k + '|' + h;
-                const showAdd = editing === key && slot.text.trim() && !slot.todoId;
-                const showDelete = editing === key && !!slot.todoId;
-                return (
-                  <div key={k + '-' + h} className={`planner-slot ${slot.done ? 'planner-done' : ''} ${slot.todoId ? 'has-task' : ''} ${editing === key ? 'slot-editing' : ''}`}>
-                    <input className="planner-checkbox" type="checkbox" checked={slot.done} onChange={e => setDone(k, h, e.target.checked)} />
-                    <textarea className="planner-cell" value={slot.text} onChange={e => setSlot(k, h, e.target.value)} onFocus={() => setEditing(key)} onBlur={() => setTimeout(() => { setEditing(curr => curr === key ? null : curr); }, 120)} />
-                    {showAdd && (
-                      <button className="btn success small planner-add-btn" onMouseDown={e => e.preventDefault()} onClick={() => addTodoFromSlot(k, h)}>Add</button>
-                    )}
-                    {showDelete && (
-                      <button className="btn danger small planner-del-btn" onMouseDown={e => e.preventDefault()} onClick={() => deleteLinkedTodo(k, h)}>Delete</button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          ))}
         </div>
+      </div>
+
+      <div className="panel">
+        <div className="row between wrap" style={{ marginBottom: 12 }}>
+          <h3 className="panel-title">Shared Planner</h3>
+          <div className="row wrap" style={{ gap: 8 }}>
+            <select className="select" value={groupId} onChange={e => setGroupId(e.target.value)} style={{ minWidth: 160 }}>
+              <option value="">Select group</option>
+              {groups.map(g => <option key={g.id} value={g.id}>{g.name}</option>)}
+            </select>
+            <button className="btn secondary" onClick={onCreateGroup}>Create group</button>
+            <button className="btn secondary" onClick={onInviteLink} disabled={!groupId}>Invite link</button>
+            <input className="input" placeholder="Paste invite token" value={inviteInput} onChange={e => setInviteInput(e.target.value)} style={{ maxWidth: 220 }} />
+            <button className="btn" onClick={onAcceptInvite}>Join</button>
+          </div>
+        </div>
+
+        {!groupId ? (
+          <div className="small">Select or create a group to view its shared schedule.</div>
+        ) : (
+          <div className="planner-matrix-wrapper">
+            <div className={`planner-matrix days-${days}`}>
+              <div className="planner-matrix-header">
+                <div className="planner-time"></div>
+                {dayKeys.map(k => (
+                  <div className="planner-day-label" key={k}>{labelFor(k)}</div>
+                ))}
+              </div>
+              {hoursRange().map(h => (
+                <div className="planner-matrix-row" key={h}>
+                  <div className="planner-time">{String(h).padStart(2, '0')}:00</div>
+                  {dayKeys.map(k => {
+                    const slot = slotFor(groupPlanner, k, h);
+                    const key = 'grp|' + k + '|' + h;
+                    const showAdd = editing === key && slot.text.trim() && !slot.todoId;
+                    const showDelete = editing === key && !!slot.todoId;
+                    const scope = useCloud && groupId ? { type: 'group', id: groupId } : null;
+                    return (
+                      <div key={'grp-' + k + '-' + h} className={`planner-slot ${slot.done ? 'planner-done' : ''} ${slot.todoId ? 'has-task' : ''} ${editing === key ? 'slot-editing' : ''}`}>
+                        <input className="planner-checkbox" type="checkbox" checked={slot.done} onChange={e => setDoneGeneric(setGroupPlanner, groupPlanner, scope, k, h, e.target.checked)} />
+                        <textarea className="planner-cell" value={slot.text} onChange={e => setSlotGeneric(setGroupPlanner, groupPlanner, scope, k, h, e.target.value)} onFocus={() => setEditing(key)} onBlur={() => setTimeout(() => { setEditing(curr => curr === key ? null : curr); }, 120)} />
+                        {showAdd && (
+                          <button className="btn success small planner-add-btn" onMouseDown={e => e.preventDefault()} onClick={() => addTodoFromSlotGeneric(setGroupPlanner, groupPlanner, k, h)}>Add</button>
+                        )}
+                        {showDelete && (
+                          <button className="btn danger small planner-del-btn" onMouseDown={e => e.preventDefault()} onClick={() => deleteLinkedTodoGeneric(setGroupPlanner, groupPlanner, scope, k, h)}>Delete</button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
