@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { usePersistentState } from '../lib/hooks.js';
 import { getSupabase } from '../lib/supabaseClient.js';
 import { fetchPlannerRange, upsertSlot as upsertSlotServer, deleteSlot as deleteSlotServer, subscribePlanner } from '../lib/plannerApi.js';
+import { useAuth } from '../lib/AuthProvider.jsx';
+import { getMyGroups, createGroup, createInvite, acceptInvite } from '../lib/collabApi.js';
 
 function hoursRange(start = 6, end = 22) {
   const arr = [];
