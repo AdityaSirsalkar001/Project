@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePersistentState } from '../lib/hooks.js';
+import { getSupabase } from '../lib/supabaseClient.js';
+import { fetchPlannerRange, upsertSlot as upsertSlotServer, deleteSlot as deleteSlotServer, subscribePlanner } from '../lib/plannerApi.js';
 
 function hoursRange(start = 6, end = 22) {
   const arr = [];
